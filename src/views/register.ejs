@@ -1,0 +1,80 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="card-title text-center mb-4">Create Your Account</h1>
+                <form action="/user/register" method="POST">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="firstName" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="lastName" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email address</label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="dateOfBirth" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" required>
+                        <div id="dobError" class="form-text text-danger"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="phone1" class="form-label">Primary Phone Number</label>
+                        <input type="tel" class="form-control" id="phone1" name="phone1" required>
+                    </div>
+                     <div class="mb-3">
+                        <label for="phone2" class="form-label">Secondary Phone Number (Optional)</label>
+                        <input type="tel" class="form-control" id="phone2" name="phone2">
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary" id="registerBtn">Register</button>
+                    </div>
+                </form>
+                <div class="text-center mt-3">
+                    <p>Already have an account? <a href="/user/login">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const dobInput = document.getElementById('dateOfBirth');
+    const errorDiv = document.getElementById('dobError');
+    const registerBtn = document.getElementById('registerBtn');
+
+    dobInput.addEventListener('change', function() {
+        const selectedDate = new Date(this.value);
+        if (isNaN(selectedDate)) return; // Exit if the date is invalid
+
+        const today = new Date();
+        let age = today.getFullYear() - selectedDate.getFullYear();
+        const monthDifference = today.getMonth() - selectedDate.getMonth();
+        
+        // Adjust age if the birthday hasn't occurred yet this year
+        if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < selectedDate.getDate())) {
+            age--;
+        }
+
+        if (age < 18) {
+            errorDiv.textContent = 'You must be at least 18 years old to register.';
+            registerBtn.disabled = true;
+        } else {
+            errorDiv.textContent = ''; // Clear the error message
+            registerBtn.disabled = false;
+        }
+    });
+</script>
+
+<%- include('partials/footer') %>

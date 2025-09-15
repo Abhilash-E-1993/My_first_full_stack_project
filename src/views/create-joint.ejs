@@ -1,0 +1,38 @@
+<%- include('partials/header') %>
+
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="card-title text-center mb-3">Create a New Joint Account</h1>
+                <p class="text-center text-muted mb-4">Invite 1 to 4 other registered members by entering their email addresses.</p>
+                <form action="/account/joint/create" method="POST">
+                    <div class="mb-3">
+                        <label for="email1" class="form-label">Member 2 Email (Required)</label>
+                        <input type="email" class="form-control" name="email1" id="email1" required>
+                    </div>
+                     <div class="mb-3">
+                        <label for="email2" class="form-label">Member 3 Email (Optional)</label>
+                        <input type="email" class="form-control" name="email2" id="email2">
+                    </div>
+                     <div class="mb-3">
+                        <label for="email3" class="form-label">Member 4 Email (Optional)</label>
+                        <input type="email" class="form-control" name="email3" id="email3">
+                    </div>
+                     <div class="mb-3">
+                        <label for="email4" class="form-label">Member 5 Email (Optional)</label>
+                        <input type="email" class="form-control" name="email4" id="email4">
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                    </div>
+                </form>
+                 <div class="text-center mt-3">
+                    <a href="/account/dashboard">Back to Dashboard</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>
