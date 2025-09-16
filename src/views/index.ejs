@@ -1,14 +1,403 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { title: 'Welcome - Gemini Bank' }) %>
 
-<div class="px-4 py-5 my-5 text-center">
-    <h1 class="display-5 fw-bold">🏦 Gemini Bank</h1>
-    <div class="col-lg-6 mx-auto">
-        <p class="lead mb-4">Your secure and reliable partner in modern digital banking. Log in to access your account or register to join us today.</p>
-        <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
-            <a href="/user/register" class="btn btn-primary btn-lg px-4 gap-3">Register Now</a>
-            <a href="/user/login" class="btn btn-outline-secondary btn-lg px-4">Login</a>
+<style>
+    /* Hero Section Styles */
+    .hero-section {
+        min-height: 80vh;
+        display: flex;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        padding: 6rem 0;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 10;
+        animation: fadeInUp 1s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-title {
+        font-size: clamp(3rem, 8vw, 6rem);
+        font-weight: 900;
+        background: linear-gradient(135deg, #ffffff 0%, #667eea 50%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 2rem;
+        line-height: 1.1;
+        text-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
+        animation: titleGlow 3s ease-in-out infinite alternate;
+    }
+
+    @keyframes titleGlow {
+        0% { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.3)); }
+        100% { filter: drop-shadow(0 0 40px rgba(102, 126, 234, 0.6)); }
+    }
+
+    .hero-subtitle {
+        font-size: 1.4rem;
+        color: rgba(255, 255, 255, 0.85);
+        font-weight: 300;
+        line-height: 1.6;
+        margin-bottom: 3rem;
+        max-width: 600px;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 3rem;
+    }
+
+    /* Premium Button Styles */
+    .btn-premium {
+        position: relative;
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 50px;
+        border: none;
+        text-decoration: none;
+        transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        overflow: hidden;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-premium::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.5s;
+    }
+
+    .btn-premium:hover::before {
+        left: 100%;
+    }
+
+    .btn-primary-premium {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary-premium:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 25px 50px rgba(102, 126, 234, 0.6);
+        color: white;
+    }
+
+    .btn-secondary-premium {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        backdrop-filter: blur(10px);
+    }
+
+    .btn-secondary-premium:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateY(-3px);
+        color: white;
+        box-shadow: 0 25px 50px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Floating 3D Elements */
+    .floating-3d {
+        position: absolute;
+        pointer-events: none;
+        opacity: 0.6;
+    }
+
+    .floating-card {
+        width: 80px;
+        height: 50px;
+        background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
+        border-radius: 8px;
+        backdrop-filter: blur(10px);
+        animation: float3D 8s ease-in-out infinite;
+        box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+    }
+
+    .floating-coin {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, #ffd700, #ffed4a);
+        border-radius: 50%;
+        animation: float3D 6s ease-in-out infinite reverse;
+        box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+    }
+
+    @keyframes float3D {
+        0%, 100% { 
+            transform: translateY(0px) rotateY(0deg) rotateX(0deg); 
+        }
+        33% { 
+            transform: translateY(-30px) rotateY(120deg) rotateX(10deg); 
+        }
+        66% { 
+            transform: translateY(-15px) rotateY(240deg) rotateX(-10deg); 
+        }
+    }
+
+    .floating-card:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
+    .floating-card:nth-child(2) { top: 30%; right: 15%; animation-delay: 2s; }
+    .floating-coin:nth-child(3) { bottom: 40%; left: 20%; animation-delay: 1s; }
+    .floating-coin:nth-child(4) { top: 60%; right: 10%; animation-delay: 3s; }
+
+    /* Particle System */
+    .particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .particle {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background: rgba(102, 126, 234, 0.6);
+        border-radius: 50%;
+        animation: particleFloat 15s linear infinite;
+    }
+
+    @keyframes particleFloat {
+        0% {
+            opacity: 0;
+            transform: translateY(100vh) translateX(0);
+        }
+        10% {
+            opacity: 1;
+        }
+        90% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0;
+            transform: translateY(-10vh) translateX(100px);
+        }
+    }
+
+    /* Stats Cards */
+    .stats-section {
+        margin-top: 6rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .stat-card {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 2rem;
+        text-align: center;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        transition: all 0.4s ease;
+        animation: statCardAppear 1s ease-out;
+        animation-delay: 1.5s;
+        animation-fill-mode: both;
+    }
+
+    @keyframes statCardAppear {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .stat-card:hover {
+        transform: translateY(-10px) scale(1.05);
+        background: rgba(255, 255, 255, 0.15);
+        box-shadow: 0 25px 50px rgba(102, 126, 234, 0.2);
+    }
+
+    .stat-number {
+        font-size: 3rem;
+        font-weight: 800;
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 4rem 0;
+            min-height: 70vh;
+        }
+        
+        .hero-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .btn-premium {
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .stats-section {
+            margin-top: 4rem;
+        }
+    }
+</style>
+
+<div class="hero-section">
+    <!-- Particle System -->
+    <div class="particles">
+        <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+        <div class="particle" style="left: 20%; animation-delay: 3s;"></div>
+        <div class="particle" style="left: 30%; animation-delay: 6s;"></div>
+        <div class="particle" style="left: 40%; animation-delay: 9s;"></div>
+        <div class="particle" style="left: 50%; animation-delay: 12s;"></div>
+        <div class="particle" style="left: 60%; animation-delay: 2s;"></div>
+        <div class="particle" style="left: 70%; animation-delay: 5s;"></div>
+        <div class="particle" style="left: 80%; animation-delay: 8s;"></div>
+        <div class="particle" style="left: 90%; animation-delay: 11s;"></div>
+    </div>
+
+    <!-- Floating 3D Elements -->
+    <div class="floating-3d floating-card"></div>
+    <div class="floating-3d floating-card"></div>
+    <div class="floating-3d floating-coin"></div>
+    <div class="floating-3d floating-coin"></div>
+
+    <div class="container">
+        <div class="hero-content text-center">
+            <h1 class="hero-title">
+                <i class="fas fa-university me-3" style="color: rgba(102, 126, 234, 0.8);"></i>
+                Gemini Bank
+            </h1>
+            <p class="hero-subtitle">
+                Your secure and reliable partner in modern digital banking. Experience the future of finance with cutting-edge technology, unparalleled security, and personalized service that adapts to your needs.
+            </p>
+            
+            <div class="hero-buttons">
+                <a href="/user/register" class="btn-premium btn-primary-premium">
+                    <i class="fas fa-rocket me-2"></i>
+                    Start Your Journey
+                </a>
+                <a href="/user/login" class="btn-premium btn-secondary-premium">
+                    <i class="fas fa-sign-in-alt me-2"></i>
+                    Access Account
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats Section -->
+    <div class="container stats-section">
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">1M+</div>
+                    <div class="stat-label">Trusted Customers</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">99%</div>
+                    <div class="stat-label">Uptime Guarantee</div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Customer Support</div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    // Add entrance animations on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll('.stat-card').forEach(card => {
+        observer.observe(card);
+    });
+
+    // Add mouse parallax effect
+    document.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX / window.innerWidth;
+        const mouseY = e.clientY / window.innerHeight;
+        
+        document.querySelectorAll('.floating-3d').forEach((element, index) => {
+            const speed = (index + 1) * 0.5;
+            const x = (mouseX * speed * 20) - (speed * 10);
+            const y = (mouseY * speed * 20) - (speed * 10);
+            
+            element.style.transform += ` translate(${x}px, ${y}px)`;
+        });
+    });
+
+    // Enhanced button interactions
+    document.querySelectorAll('.btn-premium').forEach(btn => {
+        btn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-3px) scale(1.02)';
+        });
+        
+        btn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0) scale(1)';
+        });
+        
+        btn.addEventListener('mousedown', function() {
+            this.style.transform = 'translateY(-1px) scale(0.98)';
+        });
+        
+        btn.addEventListener('mouseup', function() {
+            this.style.transform = 'translateY(-3px) scale(1.02)';
+        });
+    });
+</script>
 
 <%- include('partials/footer') %>

@@ -1,36 +1,215 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { title: 'Apply for a Loan' }) %>
 
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h1 class="card-title text-center mb-3">Apply for a New Loan</h1>
-                <p class="text-center text-muted mb-4">Account Number: <%= accountNumber %></p>
-                <form action="/account/loans/apply" method="POST">
-                    <input type="hidden" name="accountId" value="<%= accountId %>">
-                    <div class="mb-3">
-                        <label for="loanType" class="form-label">Loan Type</label>
-                        <select class="form-select" name="loanType" id="loanType" required>
-                            <option value="" disabled selected>-- Select a Loan Type --</option>
-                            <option value="Personal">Personal Loan</option>
-                            <option value="Home">Home Loan</option>
-                            <option value="Car">Car Loan</option>
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="amount" class="form-label">Amount</label>
-                        <input type="number" class="form-control" name="amount" id="amount" placeholder="Loan Amount" step="100" required>
-                    </div>
-                    <div class="d-grid">
-                         <button type="submit" class="btn btn-primary">Submit Application</button>
-                    </div>
-                </form>
-                <div class="text-center mt-3">
-                    <a href="/account/dashboard">Back to Dashboard</a>
+<style>
+    /* --- State-of-the-Art Loan Application --- */
+    :root {
+        --dark-bg: #10101a;
+        --card-bg: rgba(26, 26, 46, 0.7);
+        --card-border: rgba(255, 255, 255, 0.1);
+        --text-light: #f0f0f0;
+        --text-muted: #a0a0b0;
+        --primary-accent: #667eea;
+        --primary-glow: rgba(102, 126, 234, 0.3);
+        --input-bg: rgba(0, 0, 0, 0.25);
+    }
+
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-light);
+    }
+
+    .form-container {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    /* Glass Card Style */
+    .glass-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(25px);
+        border: 1px solid var(--card-border);
+        border-radius: 1.25rem;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 550px;
+        animation: cardEntrance 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    @keyframes cardEntrance {
+        from { opacity: 0; transform: translateY(40px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .form-title {
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        text-align: center;
+        color: var(--text-muted);
+        margin-bottom: 2.5rem;
+    }
+
+    /* Premium Form Elements */
+    .premium-input, .premium-select {
+        background: var(--input-bg);
+        border: 1px solid var(--card-border);
+        color: var(--text-light);
+        border-radius: 0.75rem;
+        padding: 0.9rem 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+    .premium-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23a0a0b0' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+    }
+    .premium-input:focus, .premium-select:focus {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 0 3px var(--primary-glow);
+        outline: none;
+    }
+    
+    /* Loan Details Display */
+    .loan-details {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--card-border);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        text-align: center;
+    }
+    .loan-details h5 {
+        color: var(--text-muted);
+        font-size: 1rem;
+        margin-bottom: 0.5rem;
+    }
+    .loan-details .amount {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--primary-accent);
+    }
+    .loan-details small {
+        color: var(--text-muted);
+    }
+    
+    .btn-submit-app {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 0.75rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+    .back-link {
+        color: var(--text-muted);
+        text-decoration: none;
+    }
+</style>
+
+<div class="form-container">
+    <div class="glass-card">
+        <h1 class="form-title">Apply for a New Loan</h1>
+        <p class="form-subtitle">Account Number: <%= accountNumber %></p>
+        
+        <form action="/account/loans/apply" method="POST">
+            <input type="hidden" name="accountId" value="<%= accountId %>">
+            
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="loanType" class="form-label">Loan Type</label>
+                    <select class="form-select premium-select" name="loanType" id="loanType" required>
+                        <option value="" disabled selected>Select Type...</option>
+                        <option value="Personal" data-interest="5" data-term="36">Personal Loan</option>
+                        <option value="Home" data-interest="3.5" data-term="240">Home Loan</option>
+                        <option value="Car" data-interest="4.2" data-term="60">Car Loan</option>
+                    </select>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="amount" class="form-label">Amount</label>
+                    <input type="number" class="form-control premium-input" name="amount" id="amount" placeholder="$5,000" step="100" min="500" required>
                 </div>
             </div>
+
+            <div class="loan-details" id="loanDetailsDisplay" style="display: none;">
+                <div class="row">
+                    <div class="col-6">
+                        <h5>Est. Monthly Payment</h5>
+                        <p class="amount" id="monthlyPayment">$0.00</p>
+                    </div>
+                    <div class="col-6">
+                        <h5>Est. Total Repayment</h5>
+                        <p class="amount" id="totalRepayment">$0.00</p>
+                    </div>
+                </div>
+                 <small id="loanTermDetails"></small>
+            </div>
+
+            <div class="d-grid mt-4">
+                 <button type="submit" class="btn btn-submit-app">Submit Application</button>
+            </div>
+        </form>
+        
+        <div class="text-center mt-4">
+            <a href="/account/dashboard" class="back-link">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const loanTypeSelect = document.getElementById('loanType');
+    const amountInput = document.getElementById('amount');
+    const loanDetailsDisplay = document.getElementById('loanDetailsDisplay');
+    const monthlyPaymentEl = document.getElementById('monthlyPayment');
+    const totalRepaymentEl = document.getElementById('totalRepayment');
+    const loanTermDetailsEl = document.getElementById('loanTermDetails');
+
+    function calculateLoan() {
+        const selectedOption = loanTypeSelect.options[loanTypeSelect.selectedIndex];
+        const principal = parseFloat(amountInput.value);
+        
+        if (!selectedOption.value || isNaN(principal) || principal <= 0) {
+            loanDetailsDisplay.style.display = 'none';
+            return;
+        }
+
+        const annualInterestRate = parseFloat(selectedOption.dataset.interest);
+        const termInMonths = parseInt(selectedOption.dataset.term);
+        
+        const monthlyInterestRate = (annualInterestRate / 100) / 12;
+        
+        // M = P [ i(1 + i)^n ] / [ (1 + i)^n – 1]
+        const monthlyPayment = principal * (monthlyInterestRate * Math.pow(1 + monthlyInterestRate, termInMonths)) / (Math.pow(1 + monthlyInterestRate, termInMonths) - 1);
+        const totalRepayment = monthlyPayment * termInMonths;
+
+        if (isFinite(monthlyPayment)) {
+            monthlyPaymentEl.textContent = `$${monthlyPayment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            totalRepaymentEl.textContent = `$${totalRepayment.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            loanTermDetailsEl.textContent = `Based on a ${termInMonths}-month term at ${annualInterestRate}% interest.`;
+            loanDetailsDisplay.style.display = 'block';
+        } else {
+             loanDetailsDisplay.style.display = 'none';
+        }
+    }
+
+    loanTypeSelect.addEventListener('change', calculateLoan);
+    amountInput.addEventListener('input', calculateLoan);
+});
+</script>
 
 <%- include('partials/footer') %>

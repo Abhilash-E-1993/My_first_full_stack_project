@@ -1,26 +1,192 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { title: 'Joint Account Login' }) %>
 
-<div class="row justify-content-center">
-    <div class="col-md-6 col-lg-4">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h1 class="card-title text-center mb-4">Joint Account Login</h1>
-                <form action="/user/joint/login" method="POST">
-                    <div class="mb-3">
-                        <label for="accountNumber" class="form-label">Joint Account Number</label>
-                        <input type="text" class="form-control" id="accountNumber" name="accountNumber" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Joint Account Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required>
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Login</button>
-                    </div>
-                </form>
+<style>
+    /* --- State-of-the-Art Joint Account Login --- */
+    :root {
+        --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        --text-light: #f0f0f0;
+        --text-muted: #a0a0b0;
+        --card-bg: rgba(26, 26, 46, 0.7);
+        --card-border: rgba(255, 255, 255, 0.1);
+        --input-bg: rgba(0, 0, 0, 0.25);
+        --input-border: rgba(255, 255, 255, 0.15);
+        --primary-accent: #667eea;
+        --primary-glow: rgba(102, 126, 234, 0.3);
+    }
+
+    body {
+        background: var(--dark-gradient); /* From header */
+    }
+
+    .login-container {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    /* Glass Card Style */
+    .glass-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(25px);
+        border: 1px solid var(--card-border);
+        border-radius: 1.25rem;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+        padding: 3rem 2.5rem;
+        width: 100%;
+        max-width: 450px;
+        position: relative;
+        overflow: hidden;
+        animation: cardEntrance 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        opacity: 0;
+    }
+
+    @keyframes cardEntrance {
+        from { opacity: 0; transform: translateY(40px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .form-title {
+        font-weight: 800;
+        font-size: 2rem;
+        text-align: center;
+        margin-bottom: 2.5rem;
+        color: var(--text-light);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    
+    .form-title i {
+        color: var(--primary-accent);
+    }
+
+    /* Premium Input Styles */
+    .form-group {
+        margin-bottom: 1.75rem;
+        position: relative;
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: var(--text-muted);
+        margin-bottom: 0.5rem;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .premium-input {
+        background: var(--input-bg);
+        border: 1px solid var(--input-border);
+        color: var(--text-light);
+        border-radius: 0.75rem;
+        padding: 1rem 3rem 1rem 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .premium-input:focus {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 0 3px var(--primary-glow);
+        outline: none;
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        transition: all 0.3s ease;
+    }
+    
+    .premium-input:focus ~ .input-icon {
+        color: var(--primary-accent);
+    }
+
+    /* Password Toggle */
+    #passwordToggle {
+        cursor: pointer;
+    }
+
+    /* Premium Button */
+    .btn-premium-submit {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 0.75rem;
+        background: var(--primary-gradient);
+        color: white;
+        cursor: pointer;
+        transition: all 0.4s ease;
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+    }
+    
+    .btn-premium-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-premium-submit:active {
+        transform: translateY(-1px);
+    }
+    
+</style>
+
+<div class="login-container">
+    <div class="glass-card">
+        <h1 class="form-title">
+            <i class="fas fa-users"></i>
+            Joint Account Access
+        </h1>
+        <form action="/user/joint/login" method="POST">
+            <div class="form-group">
+                <label for="accountNumber" class="form-label">Joint Account Number</label>
+                <div class="input-wrapper">
+                    <input type="text" class="form-control premium-input" id="accountNumber" name="accountNumber" required>
+                    <i class="fas fa-hashtag input-icon"></i>
+                </div>
             </div>
-        </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Password</label>
+                <div class="input-wrapper">
+                    <input type="password" class="form-control premium-input" id="password" name="password" required>
+                    <i class="fas fa-eye input-icon" id="passwordToggle"></i>
+                </div>
+            </div>
+            <div class="d-grid mt-4">
+                <button type="submit" class="btn-premium-submit">
+                    <i class="fas fa-lock me-2"></i>Secure Login
+                </button>
+            </div>
+        </form>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const passwordInput = document.getElementById('password');
+    const passwordToggle = document.getElementById('passwordToggle');
+
+    if (passwordInput && passwordToggle) {
+        passwordToggle.addEventListener('click', function() {
+            // Check the current type of the password input
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+
+            // Toggle the icon class
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    }
+});
+</script>
 
 <%- include('partials/footer') %>

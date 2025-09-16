@@ -1,38 +1,250 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { title: 'Create Joint Account' }) %>
 
-<div class="row justify-content-center">
-    <div class="col-md-8 col-lg-6">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <h1 class="card-title text-center mb-3">Create a New Joint Account</h1>
-                <p class="text-center text-muted mb-4">Invite 1 to 4 other registered members by entering their email addresses.</p>
-                <form action="/account/joint/create" method="POST">
-                    <div class="mb-3">
-                        <label for="email1" class="form-label">Member 2 Email (Required)</label>
-                        <input type="email" class="form-control" name="email1" id="email1" required>
-                    </div>
-                     <div class="mb-3">
-                        <label for="email2" class="form-label">Member 3 Email (Optional)</label>
-                        <input type="email" class="form-control" name="email2" id="email2">
-                    </div>
-                     <div class="mb-3">
-                        <label for="email3" class="form-label">Member 4 Email (Optional)</label>
-                        <input type="email" class="form-control" name="email3" id="email3">
-                    </div>
-                     <div class="mb-3">
-                        <label for="email4" class="form-label">Member 5 Email (Optional)</label>
-                        <input type="email" class="form-control" name="email4" id="email4">
-                    </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary">Create Account</button>
-                    </div>
-                </form>
-                 <div class="text-center mt-3">
-                    <a href="/account/dashboard">Back to Dashboard</a>
+<style>
+    /* --- State-of-the-Art Joint Account Creation --- */
+    :root {
+        --dark-bg: #10101a;
+        --card-bg: rgba(26, 26, 46, 0.7);
+        --card-border: rgba(255, 255, 255, 0.1);
+        --text-light: #f0f0f0;
+        --text-muted: #a0a0b0;
+        --primary-accent: #667eea;
+        --primary-glow: rgba(102, 126, 234, 0.3);
+        --input-bg: rgba(0, 0, 0, 0.25);
+    }
+
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-light);
+    }
+
+    .form-container {
+        min-height: 85vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1rem;
+    }
+
+    /* Glass Card Style */
+    .glass-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(25px);
+        border: 1px solid var(--card-border);
+        border-radius: 1.25rem;
+        box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+        padding: 2.5rem;
+        width: 100%;
+        max-width: 600px;
+        animation: cardEntrance 1s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+    }
+
+    @keyframes cardEntrance {
+        from { opacity: 0; transform: translateY(40px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .form-title {
+        font-weight: 800;
+        text-align: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-subtitle {
+        text-align: center;
+        color: var(--text-muted);
+        margin-bottom: 2.5rem;
+    }
+
+    /* Dynamic Member Fields */
+    .member-field {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+        animation: slideIn 0.5s ease-out forwards;
+    }
+    
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .premium-input {
+        background: var(--input-bg);
+        border: 1px solid var(--card-border);
+        color: var(--text-light);
+        border-radius: 0.75rem;
+        padding: 0.9rem 1rem;
+        width: 100%;
+        transition: all 0.3s ease;
+    }
+
+    .premium-input:focus {
+        background: rgba(0, 0, 0, 0.3);
+        border-color: var(--primary-accent);
+        box-shadow: 0 0 0 3px var(--primary-glow);
+        outline: none;
+    }
+
+    .btn-remove-member {
+        background: rgba(255, 107, 107, 0.1);
+        color: #ff6b6b;
+        border: none;
+        border-radius: 50%;
+        width: 38px;
+        height: 38px;
+        flex-shrink: 0;
+        transition: all 0.3s ease;
+    }
+    .btn-remove-member:hover {
+        background: rgba(255, 107, 107, 0.2);
+        transform: scale(1.1);
+    }
+    
+    /* Action Buttons */
+    .btn-add-member {
+        display: block;
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px dashed var(--card-border);
+        background: transparent;
+        color: var(--text-muted);
+        font-weight: 600;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+    }
+    .btn-add-member:hover:not(:disabled) {
+        border-color: var(--primary-accent);
+        background: rgba(102, 126, 234, 0.1);
+        color: var(--primary-accent);
+    }
+    .btn-add-member:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .btn-create-account {
+        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+        font-weight: 700;
+        border: none;
+        border-radius: 0.75rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        transition: all 0.4s ease;
+    }
+    
+    .back-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        transition: color 0.3s;
+    }
+    .back-link:hover {
+        color: var(--text-light);
+    }
+</style>
+
+<div class="form-container">
+    <div class="glass-card">
+        <h1 class="form-title">Create a New Joint Account</h1>
+        <p class="form-subtitle">Invite up to 4 other members by their email address.</p>
+        
+        <form action="/account/joint/create" method="POST">
+            <div id="member-fields-container">
+                <div class="mb-3">
+                    <label for="email1" class="form-label">Member 2 Email (Required)</label>
+                    <input type="email" class="form-control premium-input" name="email1" required>
                 </div>
             </div>
+
+            <div class="mb-4">
+                <button type="button" class="btn-add-member" id="addMemberBtn">
+                    <i class="fas fa-plus me-2"></i>Add Another Member
+                </button>
+            </div>
+            
+            <div class="d-grid">
+                <button type="submit" class="btn btn-create-account">Create Account</button>
+            </div>
+        </form>
+        
+        <div class="text-center mt-4">
+            <a href="/account/dashboard" class="back-link">
+                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+            </a>
         </div>
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const addMemberBtn = document.getElementById('addMemberBtn');
+    const container = document.getElementById('member-fields-container');
+    let memberCount = 1; // Start with 1 since the first member field is already there
+    const maxMembers = 4; // Max of 4 additional members (total 5)
+
+    addMemberBtn.addEventListener('click', () => {
+        if (memberCount < maxMembers) {
+            memberCount++;
+            
+            // Create new field elements
+            const newFieldDiv = document.createElement('div');
+            newFieldDiv.className = 'member-field';
+
+            const newInput = document.createElement('input');
+            newInput.type = 'email';
+            newInput.className = 'form-control premium-input';
+            newInput.name = `email${memberCount}`;
+            newInput.placeholder = `Member ${memberCount + 1} Email (Optional)`;
+            
+            const removeBtn = document.createElement('button');
+            removeBtn.type = 'button';
+            removeBtn.className = 'btn btn-remove-member';
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            
+            // Append new elements
+            newFieldDiv.appendChild(newInput);
+            newFieldDiv.appendChild(removeBtn);
+            container.appendChild(newFieldDiv);
+            
+            // Add remove functionality
+            removeBtn.addEventListener('click', () => {
+                newFieldDiv.style.animation = 'slideOut 0.5s ease-out forwards';
+                newFieldDiv.addEventListener('animationend', () => {
+                    newFieldDiv.remove();
+                    // We don't decrement memberCount to avoid name conflicts,
+                    // but we re-enable the add button.
+                    updateAddButtonState(); 
+                });
+            });
+            
+            updateAddButtonState();
+        }
+    });
+    
+    function updateAddButtonState() {
+        const currentFields = container.querySelectorAll('.member-field').length + 1; // +1 for the static required field
+        if (currentFields >= maxMembers + 1) {
+            addMemberBtn.disabled = true;
+            addMemberBtn.textContent = 'Maximum members reached';
+        } else {
+            addMemberBtn.disabled = false;
+            addMemberBtn.innerHTML = '<i class="fas fa-plus me-2"></i>Add Another Member';
+        }
+    }
+});
+
+// Add a simple slide-out animation to the CSS
+const styleSheet = document.createElement("style");
+styleSheet.innerText = `
+    @keyframes slideOut {
+        from { opacity: 1; transform: translateX(0); }
+        to { opacity: 0; transform: translateX(20px); }
+    }
+`;
+document.head.appendChild(styleSheet);
+</script>
 
 <%- include('partials/footer') %>

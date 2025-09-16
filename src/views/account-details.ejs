@@ -1,86 +1,218 @@
-<%- include('partials/header') %>
+<%- include('partials/header', { title: 'Account Details' }) %>
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h1 class="h2">Account Details</h1>
-    <a href="/admin/dashboard" class="btn btn-secondary">Back to Admin Dashboard</a>
-</div>
+<style>
+    /* --- State-of-the-Art Admin Search Results --- */
+    :root {
+        --dark-bg: #10101a;
+        --card-bg: rgba(26, 26, 46, 0.7);
+        --card-border: rgba(255, 255, 255, 0.1);
+        --text-light: #f0f0f0;
+        --text-muted: #a0a0b0;
+        --primary-accent: #667eea;
+        --warning-color: #ffa726;
+        --warning-glow: rgba(255, 167, 38, 0.15);
+    }
 
-<% if (!searchAttempted) { %>
-    <p class="text-muted">Please use the search bar on the admin dashboard to find an account.</p>
-<% } else if (!account) { %>
-    <div class="alert alert-warning" role="alert">
-        <strong>Account Not Found!</strong> No account exists with the number <%= searchedNumber %>.
+    body {
+        background-color: var(--dark-bg);
+        color: var(--text-light);
+    }
+
+    .page-header {
+        border-bottom: 1px solid var(--card-border);
+        padding-bottom: 1.5rem;
+    }
+
+    .page-header h1 {
+        font-weight: 700;
+        font-size: 2rem;
+    }
+
+    /* Glass Card Style */
+    .glass-card {
+        background: var(--card-bg);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--card-border);
+        border-radius: 1rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+    
+    .card-header {
+        background: transparent;
+        border-bottom: 1px solid var(--card-border);
+        font-weight: 600;
+        padding: 1rem 1.5rem;
+    }
+
+    /* State-specific cards */
+    .prompt-card, .not-found-card {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+    .prompt-card i, .not-found-card i {
+        font-size: 4rem;
+        color: var(--primary-accent);
+        opacity: 0.5;
+        margin-bottom: 1.5rem;
+    }
+    .not-found-card i {
+        color: var(--warning-color);
+    }
+    .prompt-card h3, .not-found-card h3 {
+        font-weight: 700;
+    }
+    .prompt-card p, .not-found-card p {
+        color: var(--text-muted);
+        max-width: 400px;
+        margin: 0.5rem auto 0;
+    }
+    .not-found-card .searched-number {
+        font-family: 'SF Mono', monospace;
+        background: var(--warning-glow);
+        color: var(--warning-color);
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+    }
+
+    /* Details View */
+    .summary-item p {
+        margin-bottom: 0.5rem;
+    }
+    .summary-item strong {
+        color: var(--text-muted);
+        min-width: 150px;
+        display: inline-block;
+    }
+    .members-list .list-group-item {
+        background: transparent;
+        border-color: var(--card-border);
+        color: var(--text-light);
+    }
+    
+    /* Table Styles */
+    .table { color: var(--text-light); }
+    .table thead th {
+        color: var(--text-muted);
+        border-bottom: 1px solid var(--card-border);
+    }
+    .table td, .table th {
+        border-top: 1px solid var(--card-border);
+        vertical-align: middle;
+    }
+    .table-hover tbody tr:hover {
+        background-color: rgba(255, 255, 255, 0.03);
+    }
+    .status-badge {
+        padding: 0.4em 0.8em;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.8rem;
+    }
+</style>
+
+<div class="container-fluid py-4 px-lg-5">
+    <div class="d-flex justify-content-between align-items-center mb-5 page-header">
+        <h1><i class="fas fa-search-dollar me-3"></i>Account Details</h1>
+        <a href="/admin/dashboard" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Admin Dashboard
+        </a>
     </div>
-<% } else { %>
-    <div class="row mb-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header">Account Summary</div>
-                <div class="card-body">
-                    <p><strong>Account Number:</strong> <%= account.account_number %></p>
-                    <p><strong>Account Type:</strong> <%= account.account_type %></p>
-                    <p><strong>Balance:</strong> $<%= parseFloat(account.balance).toFixed(2) %></p>
+
+    <% if (!searchAttempted) { %>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="glass-card prompt-card">
+                    <i class="fas fa-search"></i>
+                    <h3>Find an Account</h3>
+                    <p>Use the "Account Lookup" feature on the admin dashboard to search for an account by its number.</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-header">Account Members</div>
-                <ul class="list-group list-group-flush">
-                    <% members.forEach(member => { %>
-                        <li class="list-group-item"><%= member.first_name %> <%= member.last_name %> (<%= member.email %>)</li>
-                    <% }); %>
-                </ul>
+    <% } else if (!account) { %>
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="glass-card not-found-card">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <h3>Account Not Found</h3>
+                    <p>No account exists with the number <strong class="searched-number"><%= searchedNumber %></strong>. Please check the number and try again.</p>
+                </div>
             </div>
         </div>
-    </div>
+    <% } else { %>
+        <div class="row">
+            <div class="col-lg-5 mb-4">
+                <div class="glass-card mb-4">
+                    <div class="card-header">Account Summary</div>
+                    <div class="card-body summary-item p-4">
+                        <p><strong>Account Number:</strong> <%= account.account_number %></p>
+                        <p><strong>Account Type:</strong> <%= account.account_type %></p>
+                        <p><strong>Balance:</strong> $<%= parseFloat(account.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></p>
+                    </div>
+                </div>
+                <div class="glass-card members-list">
+                    <div class="card-header">Account Members</div>
+                    <ul class="list-group list-group-flush">
+                        <% members.forEach(member => { %>
+                            <li class="list-group-item">
+                                <strong><%= member.first_name %> <%= member.last_name %></strong>
+                                <br>
+                                <small class="text-muted"><%= member.email %></small>
+                            </li>
+                        <% }); %>
+                    </ul>
+                </div>
+            </div>
 
-    <div class="card shadow-sm mb-4">
-        <div class="card-header">Loan History</div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
-                    <tbody>
-                        <% if (loans.length === 0) { %>
-                            <tr><td colspan="4" class="text-center text-muted">No loan history for this account.</td></tr>
-                        <% } else { loans.forEach(loan => { %>
-                            <tr>
-                                <td><%= new Date(loan.request_date).toLocaleDateString() %></td>
-                                <td><%= loan.loan_type %></td>
-                                <td>$<%= parseFloat(loan.amount).toFixed(2) %></td>
-                                <td><span class="badge bg-<%= loan.status === 'APPROVED' ? 'success' : (loan.status === 'REJECTED' ? 'danger' : 'warning') %>"><%= loan.status %></span></td>
-                            </tr>
-                        <% }); } %>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+            <div class="col-lg-7">
+                <div class="glass-card mb-4">
+                    <div class="card-header">Loan History</div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
+                                <tbody>
+                                    <% if (loans.length === 0) { %>
+                                        <tr><td colspan="4" class="text-center text-muted py-4">No loan history.</td></tr>
+                                    <% } else { loans.forEach(loan => { %>
+                                        <tr>
+                                            <td><%= new Date(loan.request_date).toLocaleDateString() %></td>
+                                            <td><%= loan.loan_type %></td>
+                                            <td>$<%= parseFloat(loan.amount).toFixed(2) %></td>
+                                            <td><span class="status-badge bg-<%= loan.status === 'APPROVED' ? 'success' : (loan.status === 'REJECTED' ? 'danger' : 'warning') %>"><%= loan.status %></span></td>
+                                        </tr>
+                                    <% }); } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header">Transaction History</div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-striped table-hover">
-                    <thead><tr><th>Date</th><th>Type</th><th>Amount</th></tr></thead>
-                    <tbody>
-                        <% if (transactions.length === 0) { %>
-                            <tr><td colspan="3" class="text-center text-muted">No transaction history for this account.</td></tr>
-                        <% } else { transactions.forEach(tx => { %>
-                            <tr>
-                                <td><%= new Date(tx.timestamp).toLocaleString() %></td>
-                                <td><%= tx.transaction_type %></td>
-                                <td class="text-<%= tx.from_account_id === account.account_id ? 'danger' : 'success' %>">
-                                    <%= tx.from_account_id === account.account_id ? '-' : '+' %> $<%= parseFloat(tx.amount).toFixed(2) %>
-                                </td>
-                            </tr>
-                        <% }); } %>
-                    </tbody>
-                </table>
+                <div class="glass-card">
+                    <div class="card-header">Transaction History</div>
+                     <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="table table-hover mb-0">
+                                <thead><tr><th>Date</th><th>Type</th><th>Amount</th></tr></thead>
+                                <tbody>
+                                    <% if (transactions.length === 0) { %>
+                                        <tr><td colspan="3" class="text-center text-muted py-4">No transaction history.</td></tr>
+                                    <% } else { transactions.forEach(tx => { %>
+                                        <tr>
+                                            <td><%= new Date(tx.timestamp).toLocaleString() %></td>
+                                            <td><%= tx.transaction_type %></td>
+                                            <td class="fw-bold text-<%= tx.from_account_id === account.account_id ? 'danger' : 'success' %>">
+                                                <%= tx.from_account_id === account.account_id ? '-' : '+' %> $<%= parseFloat(tx.amount).toFixed(2) %>
+                                            </td>
+                                        </tr>
+                                    <% }); } %>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-<% } %>
+    <% } %>
+</div>
 
 <%- include('partials/footer') %>
