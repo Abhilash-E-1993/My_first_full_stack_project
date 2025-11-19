@@ -19,6 +19,10 @@ router.post('/loans/reject/:loanId', adminController.rejectLoan);
 // GET /admin/search
 router.get('/search', adminController.searchAccount);
 
-
+// --- NEW INSIGHT ROUTES ---
+router.get('/insights', adminController.showInsightsPage);
+router.post('/insights/high-balance', adminController.getHighBalanceCustomers);
+router.get('/insights/top-transactions', adminController.getTopTransactionCustomers);
+router.get('/insights/top-loans', adminController.getTopLoanCustomers);
 
 module.exports = router;

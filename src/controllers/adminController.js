@@ -170,3 +170,100 @@ exports.searchAccount = async (req, res) => {
         res.status(500).send('Server Error');
     }
 };
+
+// --- ADVANCED INSIGHT QUERIES --- //
+
+exports.showInsightsPage = (req, res) => {
+    res.render('admin-insights', { results: null, title: 'Bank Insights', type: null });
+};
+
+// 1️⃣ Customers having more than X balance
+exports.getHighBalanceCustomers = async (req, res) => {
+    const { minBalance } = req.body;
+    try {
+        const [rows] = await pool.query(`
+            SELECT 
+                u.user_id,
+                CONCAT(u.first_name, ' ', u.last_name) AS full_name,
+                a.account_number,
+                a.account_type,
+                a.balance
+            FROM users u
+            JOIN joint_members jm ON u.user_id = jm.user_id
+            JOIN accounts a ON jm.account_id = a.account_id
+            WHERE a.balance > ?
+            ORDER BY a.balance DESC;
+        `, [parseFloat(minBalance) || 0]);
+
+        res.render('admin-insights', { 
+            results: rows,
+            title: `Customers with Balance > ${minBalance}`,
+            type: 'high-balance'
+        });
+
+    } catch (err) {
+        console.error('High balance query error:', err);
+        res.status(500).send('Server Error');
+    }
+};
+
+
+// Top transaction customers (fixed for ONLY_FULL_GROUP_BY)
+exports.getTopTransactionCustomers = async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT
+        u.user_id,
+        CONCAT(u.first_name, ' ', u.last_name) AS full_name,
+        GROUP_CONCAT(DISTINCT a.account_number SEPARATOR ', ') AS accounts,
+        COUNT(t.transaction_id) AS total_transactions
+      FROM users u
+      JOIN joint_members jm ON u.user_id = jm.user_id
+      JOIN accounts a ON jm.account_id = a.account_id
+      JOIN transactions t ON (t.from_account_id = a.account_id OR t.to_account_id = a.account_id)
+      GROUP BY u.user_id, u.first_name, u.last_name
+      ORDER BY total_transactions DESC
+      LIMIT 10;
+    `);
+
+    res.render('admin-insights', {
+      results: rows,
+      title: 'Top 10 Customers with Most Transactions',
+      type: 'top-transactions'
+    });
+  } catch (error) {
+    console.error('Top transactions query error:', error);
+    res.status(500).send('Server Error');
+  }
+};
+
+// Top loan customers (fixed / safer grouping)
+exports.getTopLoanCustomers = async (req, res) => {
+  try {
+    const [rows] = await pool.query(`
+      SELECT
+        u.user_id,
+        CONCAT(u.first_name, ' ', u.last_name) AS full_name,
+        GROUP_CONCAT(DISTINCT a.account_number SEPARATOR ', ') AS accounts,
+        IFNULL(SUM(l.amount), 0) AS total_approved_amount,
+        COUNT(CASE WHEN l.status = 'APPROVED' THEN 1 END) AS approved_loans_count
+      FROM users u
+      JOIN joint_members jm ON u.user_id = jm.user_id
+      JOIN accounts a ON jm.account_id = a.account_id
+      LEFT JOIN loans l ON a.account_id = l.account_id AND l.status = 'APPROVED'
+      GROUP BY u.user_id, u.first_name, u.last_name
+      HAVING total_approved_amount > 0
+      ORDER BY total_approved_amount DESC
+      LIMIT 10;
+    `);
+
+    res.render('admin-insights', {
+      results: rows,
+      title: 'Top Loan Customers',
+      type: 'top-loans'
+    });
+  } catch (error) {
+    console.error('Top loans query error:', error);
+    res.status(500).send('Server Error');
+  }
+};

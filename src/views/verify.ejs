@@ -259,6 +259,7 @@
         opacity: 0;
         transition: opacity 0.5s ease;
         pointer-events: none;
+        border-radius: 28px; /* Match parent card's border-radius */
     }
 
     .success-container.visible {
@@ -295,9 +296,6 @@
     @keyframes stroke { 100% { stroke-dashoffset: 0; } }
     @keyframes scale { 0%, 100% { transform: none; } 50% { transform: scale3d(1.1, 1.1, 1); } }
     @keyframes fill { 100% { box-shadow: inset 0px 0px 0px 40px #43e97b; } }
-
-    /* Toast Notifications (from previous step, unchanged) */
-    /* .toast-notification styles removed to avoid empty ruleset error */
 </style>
 
 <div class="verification-container">
@@ -370,11 +368,46 @@ document.addEventListener('DOMContentLoaded', () => {
     let timerInterval;
 
     // --- Utility: Toast Notifications ---
-    const showToast = (message, type = 'info') => { /* ... (Same as previous step) ... */ };
+    const showToast = (message, type = 'info') => {
+        const toastContainer = document.getElementById('toastContainer');
+        if (!toastContainer) {
+            console.error('Toast container not found!');
+            return;
+        }
+
+        const toast = document.createElement('div');
+        toast.className = `toast-notification toast-${type}`;
+        
+        const icons = {
+            success: 'fa-check-circle',
+            error: 'fa-times-circle',
+            info: 'fa-info-circle'
+        };
+        
+        toast.innerHTML = `<i class="fas ${icons[type]}"></i><p>${message}</p>`;
+        
+        toastContainer.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('visible');
+        }, 50);
+
+        setTimeout(() => {
+            toast.classList.remove('visible');
+            toast.addEventListener('transitionend', () => toast.remove());
+        }, 5000);
+    };
 
     // --- Utility: Button Loading State ---
-    const setLoadingState = (button, isLoading, originalText) => { /* ... (Same as previous step) ... */ };
-
+    const setLoadingState = (button, isLoading, text) => {
+        button.disabled = isLoading;
+        if (isLoading) {
+            button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> ${text}`;
+        } else {
+            button.innerHTML = text;
+        }
+    };
+    
     // --- Timer Logic ---
     const startTimer = () => {
         clearInterval(timerInterval);
@@ -413,11 +446,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 box.textContent = '';
                 box.classList.remove('filled');
             }
-            // Update cursor position
             box.classList.toggle('cursor', index === value.length);
         });
         
-        // Enable/disable verify button
         verifyBtn.disabled = value.length !== 6 || timeLeft <= 0;
         otpContainer.classList.remove('error');
     });
@@ -431,7 +462,9 @@ document.addEventListener('DOMContentLoaded', () => {
         formContainer.style.transition = 'opacity 0.5s ease';
         formContainer.style.opacity = '0';
         successContainer.classList.add('visible');
-        setTimeout(() => window.location.href = '/dashboard', 3000);
+        
+        // Corrected Redirect URL
+        setTimeout(() => window.location.href = '/user/login', 3000);
     };
 
     // --- Form Submission (Verification) ---
@@ -470,8 +503,15 @@ document.addEventListener('DOMContentLoaded', () => {
     resendBtn.addEventListener('click', async () => {
         setLoadingState(resendBtn, true, 'Resending...');
         try {
-            const response = await fetch('/user/resend-otp', { /* ... */ });
-            if (!response.ok) throw new Error('Could not resend code.');
+            const response = await fetch('/user/resend-otp', {
+                 method: 'POST',
+                 headers: { 'Content-Type': 'application/json' },
+                 body: JSON.stringify({ email })
+            });
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Could not resend code.');
+            }
 
             showToast('A new OTP has been sent.', 'success');
             otpInput.value = '';
@@ -487,7 +527,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Initializations ---
     startTimer();
-    // Focus the invisible input when the container is clicked
     otpContainer.addEventListener('click', () => otpInput.focus());
     otpInput.focus();
 });

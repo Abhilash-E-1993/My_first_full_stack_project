@@ -1,0 +1,172 @@
+<%- include('partials/header') %>
+
+<style>
+    /* Inherit dashboard theme */
+    body {
+        background: linear-gradient(135deg, #0a0a0f 0%, #14141f 50%, #0f0f1a 100%);
+        color: #ffffff;
+        font-family: 'Inter', sans-serif;
+    }
+
+    .glass-card {
+        background: rgba(26, 26, 46, 0.6);
+        backdrop-filter: blur(25px);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        transition: 0.3s ease;
+    }
+
+    .glass-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .btn-outline-primary {
+        border-radius: 12px;
+        border: 1px solid rgba(102, 126, 234, 0.6);
+        color: #aab6ff;
+        font-weight: 600;
+        transition: all 0.2s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: white;
+    }
+
+    .btn-outline-secondary:hover {
+        background: rgba(255, 255, 255, 0.1);
+    }
+
+    .table {
+        color: white;
+        border-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .table-hover tbody tr:hover {
+        background: rgba(102, 126, 234, 0.1);
+    }
+
+    .command-center-header h1 {
+        font-weight: 800;
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #ffffff 0%, #a0a0b8 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
+
+    .query-section-title {
+        font-weight: 600;
+        font-size: 1.3rem;
+        color: #aab6ff;
+    }
+
+    input.form-control {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        color: #fff;
+        border-radius: 10px;
+    }
+
+    input.form-control::placeholder {
+        color: #aaa;
+    }
+
+    .no-data {
+        color: #aaa;
+        text-align: center;
+        padding: 1.5rem;
+        font-style: italic;
+    }
+</style>
+
+<div class="container-fluid py-4 px-lg-5">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4 command-center-header">
+        <h1>Bank Insights</h1>
+        <div class="d-flex gap-3">
+            <a href="/admin/dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Row: Queries -->
+    <div class="row g-4 mb-4">
+
+        <!-- Query 1: High Balance -->
+        <div class="col-lg-4">
+            <div class="glass-card p-4 h-100">
+                <h5 class="query-section-title mb-3">Customers with Balance &gt; X</h5>
+                <form action="/admin/insights/high-balance" method="POST">
+                    <input type="number" name="minBalance" class="form-control mb-3" placeholder="Enter amount (₹)" required>
+                    <button type="submit" class="btn btn-outline-primary w-100">Show Results</button>
+                </form>
+                <p class="text-muted small mt-3">
+                    Displays all customers having account balance greater than the given amount.
+                </p>
+            </div>
+        </div>
+
+        <!-- Query 2: Most Transaction Customers -->
+        <div class="col-lg-4">
+            <div class="glass-card p-4 h-100">
+                <h5 class="query-section-title mb-3">Top Transaction Customers</h5>
+                <p class="text-muted small mb-3">
+                    Shows the most active customers based on their total number of transactions (Deposits, Withdrawals, Transfers).
+                </p>
+                <a href="/admin/insights/top-transactions" class="btn btn-outline-primary w-100">View Results</a>
+            </div>
+        </div>
+
+        <!-- Query 3: Total Approved Loan per Customer -->
+        <div class="col-lg-4">
+            <div class="glass-card p-4 h-100">
+                <h5 class="query-section-title mb-3">Top Loan Customers</h5>
+                <p class="text-muted small mb-3">
+                    Lists customers with the highest total approved loan amount. Aggregates all approved loans per customer.
+                </p>
+                <a href="/admin/insights/top-loans" class="btn btn-outline-primary w-100">View Results</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Results Section -->
+    <% if (results && results.length > 0) { %>
+        <div class="glass-card p-4">
+            <h4 class="query-section-title mb-4"><%= title %></h4>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <% Object.keys(results[0]).forEach(col => { %>
+                                <th><%= col.replaceAll('_', ' ').toUpperCase() %></th>
+                            <% }); %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% results.forEach(row => { %>
+                            <tr>
+                                <% Object.values(row).forEach(val => { %>
+                                    <td><%= val %></td>
+                                <% }); %>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <% } else if (results) { %>
+        <div class="glass-card p-4 no-data">
+            <p>No records found for the selected query.</p>
+        </div>
+    <% } %>
+
+</div>
+
+<%- include('partials/footer') %>
