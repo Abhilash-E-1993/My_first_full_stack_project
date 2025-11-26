@@ -14,7 +14,7 @@ exports.getDashboard = async (req, res) => {
         const [userRows] = await pool.query('SELECT is_admin FROM users WHERE user_id = ?', [userId]);
         const user = userRows[0];
         // --- END NEW ---
-        
+
         // Find the user's primary account
         const [accountQueryResult] = await pool.query(
             `SELECT a.* FROM accounts a
@@ -52,11 +52,11 @@ exports.getDashboard = async (req, res) => {
 exports.handleDeposit = async (req, res) => {
     const { amount, accountId } = req.body;
     const depositAmount = parseFloat(amount);
-    
+
     if (isNaN(depositAmount) || depositAmount <= 0) {
         return res.status(400).send("Invalid deposit amount.");
     }
-    
+
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
@@ -69,7 +69,7 @@ exports.handleDeposit = async (req, res) => {
             'INSERT INTO transactions (to_account_id, amount, transaction_type) VALUES (?, ?, ?)',
             [accountId, depositAmount, 'DEPOSIT']
         );
-        
+
         await connection.commit();
         req.flash('success_msg', 'Deposit successful!')
         res.redirect('/account/dashboard');
@@ -86,7 +86,7 @@ exports.handleDeposit = async (req, res) => {
 exports.handleWithdrawal = async (req, res) => {
     const { amount, accountId } = req.body;
     const withdrawalAmount = parseFloat(amount);
-    
+
     if (isNaN(withdrawalAmount) || withdrawalAmount <= 0) {
         return res.status(400).send("Invalid withdrawal amount.");
     }
@@ -94,14 +94,15 @@ exports.handleWithdrawal = async (req, res) => {
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
-        
+
         // Check for sufficient funds
         const [rows] = await connection.query('SELECT balance FROM accounts WHERE account_id = ? FOR UPDATE', [accountId]);
         const currentBalance = rows[0].balance;
 
         if (currentBalance < withdrawalAmount) {
             await connection.rollback();
-            return res.status(400).send("Insufficient funds.");
+            req.flash('error_msg', 'Insufficient funds.');
+            return res.redirect('/account/dashboard');
         }
 
         // Subtract funds
@@ -112,7 +113,7 @@ exports.handleWithdrawal = async (req, res) => {
             'INSERT INTO transactions (from_account_id, amount, transaction_type) VALUES (?, ?, ?)',
             [accountId, withdrawalAmount, 'WITHDRAWAL']
         );
-        
+
         await connection.commit();
         req.flash('success_msg', 'Withdrawal successful!');
         res.redirect('/account/dashboard');
@@ -143,7 +144,8 @@ exports.handleTransfer = async (req, res) => {
         const [senderRows] = await connection.query('SELECT balance FROM accounts WHERE account_id = ? FOR UPDATE', [fromAccountId]);
         if (senderRows[0].balance < transferAmount) {
             await connection.rollback();
-            return res.status(400).send("Insufficient funds.");
+            req.flash('error_msg', 'Insufficient funds.');
+            return res.redirect('/account/dashboard');
         }
 
         // Get recipient account and lock the row
@@ -156,13 +158,14 @@ exports.handleTransfer = async (req, res) => {
 
         if (parseInt(fromAccountId) === toAccountId) {
             await connection.rollback();
-            return res.status(400).send("Cannot transfer to the same account.");
+            req.flash('error_msg', 'Cannot transfer to the same account.');
+            return res.redirect('/account/dashboard');
         }
 
         // Perform the transfer
         await connection.query('UPDATE accounts SET balance = balance - ? WHERE account_id = ?', [transferAmount, fromAccountId]);
         await connection.query('UPDATE accounts SET balance = balance + ? WHERE account_id = ?', [transferAmount, toAccountId]);
-        
+
         // Create transaction record
         await connection.query(
             'INSERT INTO transactions (from_account_id, to_account_id, amount, transaction_type) VALUES (?, ?, ?, ?)',
@@ -213,7 +216,7 @@ exports.handleCreateJointAccount = async (req, res) => {
 
         // Generate account number
         const accountNumber = Math.floor(1000000000 + Math.random() * 9000000000).toString();
-        
+
         // Generate a random password (simple version)
         const plainPassword = Math.random().toString(36).slice(-8);
         const hashedPassword = await bcrypt.hash(plainPassword, 10);
@@ -261,17 +264,17 @@ exports.getJointDashboard = async (req, res) => {
             [accountId, accountId]
         );
         // ... inside getJointDashboard ...
-// After getting membersResult:
-const [loans] = await pool.query('SELECT * FROM loans WHERE account_id = ? ORDER BY request_date DESC', [accountId]);
+        // After getting membersResult:
+        const [loans] = await pool.query('SELECT * FROM loans WHERE account_id = ? ORDER BY request_date DESC', [accountId]);
 
-res.render('joint-dashboard', { // Add loans here
-    account: accountResult[0],
-    members: membersResult,
-    transactions,
-    loans 
-});
+        res.render('joint-dashboard', { // Add loans here
+            account: accountResult[0],
+            members: membersResult,
+            transactions,
+            loans
+        });
 
-      
+
     } catch (error) {
         console.error('Joint dashboard error:', error);
         res.status(500).send('Server Error in joint dashboard.');
@@ -287,7 +290,7 @@ exports.handleJointDeposit = async (req, res) => {
     // The core logic is the same as the primary handleDeposit
     const depositAmount = parseFloat(amount);
     if (isNaN(depositAmount) || depositAmount <= 0) return res.status(400).send("Invalid deposit amount.");
-    
+
     const connection = await pool.getConnection();
     try {
         await connection.beginTransaction();
@@ -322,10 +325,11 @@ exports.handleJointWithdrawal = async (req, res) => {
         const [rows] = await connection.query('SELECT balance FROM accounts WHERE account_id = ? FOR UPDATE', [accountId]);
         if (rows[0].balance < withdrawalAmount) {
             await connection.rollback();
-            return res.status(400).send("Insufficient funds.");
+            req.flash('error_msg', 'Insufficient funds.');
+            return res.redirect('/account/joint/dashboard');
         }
         await connection.query('UPDATE accounts SET balance = balance - ? WHERE account_id = ?', [withdrawalAmount, accountId]);
-        await connection.query('INSERT INTO transactions (from_account_id, amount, transaction_type) VALUES (?, ?, ?)',[accountId, withdrawalAmount, 'WITHDRAWAL']);
+        await connection.query('INSERT INTO transactions (from_account_id, amount, transaction_type) VALUES (?, ?, ?)', [accountId, withdrawalAmount, 'WITHDRAWAL']);
         await connection.commit();
         req.flash('success_msg', 'Withdrawal successful!');
 
@@ -356,7 +360,8 @@ exports.handleJointTransfer = async (req, res) => {
         const [senderRows] = await connection.query('SELECT balance FROM accounts WHERE account_id = ? FOR UPDATE', [fromAccountId]);
         if (senderRows[0].balance < transferAmount) {
             await connection.rollback();
-            return res.status(400).send("Insufficient funds.");
+            req.flash('error_msg', 'Insufficient funds.');
+            return res.redirect('/account/joint/dashboard');
         }
         const [recipientRows] = await connection.query('SELECT account_id FROM accounts WHERE account_number = ? FOR UPDATE', [toAccountNumber]);
         if (recipientRows.length === 0) {
@@ -366,7 +371,8 @@ exports.handleJointTransfer = async (req, res) => {
         const toAccountId = recipientRows[0].account_id;
         if (parseInt(fromAccountId) === toAccountId) {
             await connection.rollback();
-            return res.status(400).send("Cannot transfer to the same account.");
+            req.flash('error_msg', 'Cannot transfer to the same account.');
+            return res.redirect('/account/joint/dashboard');
         }
         await connection.query('UPDATE accounts SET balance = balance - ? WHERE account_id = ?', [transferAmount, fromAccountId]);
         await connection.query('UPDATE accounts SET balance = balance + ? WHERE account_id = ?', [transferAmount, toAccountId]);
@@ -376,7 +382,7 @@ exports.handleJointTransfer = async (req, res) => {
 
         // ** THE FIX IS HERE: Redirect to the JOINT dashboard **
         res.redirect('/account/joint/dashboard');
-        
+
     } catch (error) {
         await connection.rollback();
         req.flash('error_msg', 'Transfer failed.');
@@ -440,7 +446,7 @@ exports.handleLoanApplication = async (req, res) => {
             'INSERT INTO loans (account_id, loan_type, amount, status) VALUES (?, ?, ?, ?)',
             [accountId, loanType, amount, 'PENDING']
         );
-        
+
         req.flash('success_msg', 'Your loan application has been submitted successfully!');
         res.redirect('/account/dashboard');
     } catch (error) {
