@@ -1,182 +1,426 @@
 <%- include('partials/header') %>
 
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
     :root {
-        --dark-base: #0a0a0f;
-        --dark-card: #1a1a2e;
+        --bg-deep: #030014;
+        --glass-bg: rgba(255, 255, 255, 0.03);
         --glass-border: rgba(255, 255, 255, 0.08);
-        --text-primary: #ffffff;
-        --text-secondary: #a0a0b8;
-        --accent-primary: #667eea;
-        --accent-secondary: #764ba2;
-        --accent-success: #00d4aa;
-        --accent-warning: #ffa726;
-        --accent-danger: #ef5350;
+        --glass-highlight: rgba(255, 255, 255, 0.15);
+        --primary-glow: #6366f1;
+        --success-glow: #10b981;
+        --warning-glow: #f59e0b;
+        --danger-glow: #ef4444;
+        --info-glow: #3b82f6;
+        --text-main: #ffffff;
+        --text-muted: #94a3b8;
     }
 
     body {
-        background: linear-gradient(135deg, #0a0a0f 0%, #14141f 50%, #0f0f1a 100%);
-        color: var(--text-primary);
-        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-deep);
+        background-image: 
+            radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 25%),
+            radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 25%);
+        color: var(--text-main);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
     }
 
-    .command-center-header h1 {
-        font-weight: 800;
-        font-size: 2.75rem;
-        background: linear-gradient(135deg, #ffffff 0%, #a0a0b8 100%);
+    /* --- Utilities --- */
+    .text-gradient {
+        background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
-    .btn-outline-secondary {
+    /* --- Glass Components --- */
+    .ultra-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+
+    .ultra-card:hover {
+        border-color: var(--glass-highlight);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+        transform: translateY(-4px);
+    }
+
+    /* --- Header --- */
+    .dashboard-header {
+        padding: 2rem 0 3rem;
+        position: relative;
+    }
+
+    .dashboard-title {
+        font-weight: 800;
+        font-size: 2.5rem;
+        letter-spacing: -0.03em;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-glass {
         background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        color: white;
+        border: 1px solid var(--glass-border);
+        color: var(--text-main);
+        padding: 0.6rem 1.2rem;
         border-radius: 12px;
         font-weight: 600;
-        padding: 0.75rem 1.5rem;
+        transition: all 0.3s ease;
     }
 
-    .btn-outline-secondary:hover {
+    .btn-glass:hover {
         background: rgba(255, 255, 255, 0.1);
-        border-color: rgba(255, 255, 255, 0.2);
+        border-color: var(--primary-glow);
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+        color: white;
     }
 
-    .glass-card {
-        background: rgba(26, 26, 46, 0.6);
-        backdrop-filter: blur(25px);
-        border-radius: 20px;
-        border: 1px solid var(--glass-border);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        transition: 0.3s ease;
+    .btn-primary-glow {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        border: none;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+    }
+    
+    .btn-primary-glow:hover {
+        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
+        transform: translateY(-1px);
     }
 
-    .glass-card:hover {
-        transform: translateY(-5px);
+    /* --- Stat Cards --- */
+    .stat-card {
+        padding: 1.5rem;
+        position: relative;
     }
 
-    .table {
-        color: var(--text-primary);
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        border-radius: 24px;
+        z-index: -1;
+        opacity: 0.1;
     }
 
-    .table-hover tbody tr:hover {
-        background: rgba(102, 126, 234, 0.05);
-    }
+    .stat-card.primary::before { background: var(--primary-glow); }
+    .stat-card.success::before { background: var(--success-glow); }
+    .stat-card.info::before { background: var(--info-glow); }
+    .stat-card.warning::before { background: var(--warning-glow); }
 
-    .card-title {
-        font-weight: 700;
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
         margin-bottom: 1rem;
     }
+    
+    .stat-icon.primary { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+    .stat-icon.success { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .stat-icon.info { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    .stat-icon.warning { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
 
-    .stat-card-original {
-        background: var(--dark-card);
-        border-radius: 20px;
-        padding: 1.5rem;
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1;
+        margin-bottom: 0.25rem;
+    }
+
+    .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    /* --- Search Bar --- */
+    .search-container {
+        position: relative;
+    }
+    
+    .search-input {
+        background: rgba(0, 0, 0, 0.2);
+        border: 1px solid var(--glass-border);
         color: white;
-        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+        border-radius: 16px;
+        padding: 1rem 1.5rem;
+        width: 100%;
+        transition: all 0.3s;
+        font-size: 1rem;
     }
 
-    .bg-primary {
-        background: linear-gradient(135deg, #667eea, #764ba2);
+    .search-input:focus {
+        background: rgba(0, 0, 0, 0.4);
+        border-color: var(--primary-glow);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        outline: none;
     }
 
-    .bg-success {
-        background: linear-gradient(135deg, #00d4aa, #00a582);
+    .search-btn {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+        bottom: 8px;
+        border-radius: 12px;
+        padding: 0 1.5rem;
     }
 
-    .bg-info {
-        background: linear-gradient(135deg, #42a5f5, #2196f3);
+    /* --- Tables --- */
+    .nav-tabs {
+        border-bottom: 1px solid var(--glass-border);
+        margin-bottom: 1.5rem;
     }
 
-    .bg-warning {
-        background: linear-gradient(135deg, #ffa726, #ff9800);
+    .nav-link {
+        color: var(--text-muted);
+        border: none;
+        font-weight: 600;
+        padding: 1rem 1.5rem;
+        position: relative;
+        background: transparent !important;
+    }
+
+    .nav-link.active {
+        color: var(--text-main);
+    }
+
+    .nav-link.active::after {
+        content: '';
+        position: absolute;
+        bottom: -1px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: var(--primary-glow);
+        box-shadow: 0 -2px 10px var(--primary-glow);
+    }
+
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.8rem;
+    }
+
+    .custom-table thead th {
+        color: var(--text-muted);
+        font-weight: 600;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 0 1.5rem 0.5rem;
+        border: none;
+    }
+
+    .custom-table tbody tr {
+        background: rgba(255, 255, 255, 0.02);
+        transition: all 0.2s;
+    }
+
+    .custom-table tbody tr td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        border: none;
+    }
+
+    .custom-table tbody tr td:first-child { border-radius: 16px 0 0 16px; }
+    .custom-table tbody tr td:last-child { border-radius: 0 16px 16px 0; }
+
+    .custom-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.05);
+        transform: scale(1.01);
+    }
+
+    .user-info small {
+        color: var(--primary-glow);
+        font-family: 'Courier New', monospace;
+        letter-spacing: -0.5px;
+    }
+
+    /* --- Transactions --- */
+    .transaction-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .transaction-item:last-child { border-bottom: none; }
+
+    .tx-type {
+        font-size: 0.9rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+    }
+
+    .tx-time {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+    }
+
+    .tx-amount {
+        font-weight: 700;
+        font-size: 1rem;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+    .action-btn {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        transition: 0.2s;
+    }
+    .btn-approve { background: rgba(16, 185, 129, 0.2); color: #34d399; }
+    .btn-approve:hover { background: #10b981; color: white; box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+    
+    .btn-reject { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+    .btn-reject:hover { background: #ef4444; color: white; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-in {
+        animation: fadeInUp 0.6s ease-out forwards;
+        opacity: 0;
     }
 </style>
 
-<div class="container-fluid py-4 px-lg-5">
-
-    <div class="d-flex justify-content-between align-items-center mb-4 command-center-header">
-        <h1>Admin Command Center</h1>
+<div class="container-fluid px-lg-5 dashboard-header">
+    <div class="d-flex justify-content-between align-items-end mb-5 animate-in" style="animation-delay: 0.1s;">
+        <div>
+            <h6 class="text-uppercase text-muted fw-bold mb-2">System Administrator</h6>
+            <h1 class="dashboard-title text-gradient">Command Center</h1>
+        </div>
         <div class="d-flex gap-3">
-            <a href="/admin/insights" class="btn btn-outline-primary">Bank Insights</a>
-            <a href="/user/logout" class="btn btn-outline-secondary">Logout</a>
+            <a href="/admin/insights" class="btn btn-glass"><i class="fas fa-chart-pie me-2"></i>Bank Insights</a>
+            <a href="/user/logout" class="btn btn-glass text-danger"><i class="fas fa-power-off me-2"></i>Logout</a>
         </div>
     </div>
 
-    <!-- Statistics Row -->
-    <div class="row mb-4 g-4">
-        <div class="col-md-3">
-            <div class="stat-card-original bg-primary">
-                <h5 class="card-title">Total Users</h5>
-                <p class="display-6 fw-bold"><%= stats.totalUsers %></p>
+    <div class="row mb-5 g-4">
+        <div class="col-md-3 animate-in" style="animation-delay: 0.2s;">
+            <div class="ultra-card stat-card primary">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-value"><%= stats.totalUsers %></div>
+                        <div class="stat-label">Total Users</div>
+                    </div>
+                    <div class="stat-icon primary"><i class="fas fa-users"></i></div>
+                </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card-original bg-success">
-                <h5 class="card-title">Total Assets</h5>
-                <p class="display-6 fw-bold">$<%= parseFloat(stats.totalAssets).toFixed(2) %></p>
+        <div class="col-md-3 animate-in" style="animation-delay: 0.3s;">
+            <div class="ultra-card stat-card success">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-value">$<%= parseFloat(stats.totalAssets).toFixed(2) %></div>
+                        <div class="stat-label">Total Assets</div>
+                    </div>
+                    <div class="stat-icon success"><i class="fas fa-vault"></i></div>
+                </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card-original bg-info">
-                <h5 class="card-title">Total Accounts</h5>
-                <p class="display-6 fw-bold"><%= stats.totalAccounts %></p>
+        <div class="col-md-3 animate-in" style="animation-delay: 0.4s;">
+            <div class="ultra-card stat-card info">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-value"><%= stats.totalAccounts %></div>
+                        <div class="stat-label">Total Accounts</div>
+                    </div>
+                    <div class="stat-icon info"><i class="fas fa-wallet"></i></div>
+                </div>
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="stat-card-original bg-warning">
-                <h5 class="card-title">Pending Loans</h5>
-                <p class="display-6 fw-bold"><%= stats.pendingLoans %></p>
+        <div class="col-md-3 animate-in" style="animation-delay: 0.5s;">
+            <div class="ultra-card stat-card warning">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-value"><%= stats.pendingLoans %></div>
+                        <div class="stat-label">Pending Loans</div>
+                    </div>
+                    <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Search Bar -->
-    <div class="glass-card mb-4 p-4">
-        <h5 class="card-title">Search Account</h5>
-        <form action="/admin/search" method="GET" class="d-flex">
-            <input class="form-control me-2" type="search" name="accountNumber" placeholder="Enter Account Number" required>
-            <button class="btn btn-outline-primary" type="submit">Search</button>
-        </form>
+    <div class="row mb-5 animate-in" style="animation-delay: 0.6s;">
+        <div class="col-12">
+            <div class="ultra-card p-1">
+                <form action="/admin/search" method="GET" class="search-container">
+                    <input class="search-input" type="search" name="accountNumber" placeholder="Search system for Account Number..." required>
+                    <button class="btn btn-primary-glow search-btn" type="submit"><i class="fas fa-search"></i></button>
+                </form>
+            </div>
+        </div>
     </div>
 
-    <div class="row">
-        <!-- Loan Management Section -->
-        <div class="col-lg-8 mb-4">
-            <div class="glass-card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h5>Loan Applications</h5>
-                    <div class="nav nav-tabs card-header-tabs" id="loanTabs" role="tablist">
+    <div class="row g-4">
+        <div class="col-lg-8 animate-in" style="animation-delay: 0.7s;">
+            <div class="ultra-card h-100">
+                <div class="card-header border-0 bg-transparent pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="fas fa-file-invoice-dollar me-2 text-primary"></i>Loan Applications</h5>
+                </div>
+                
+                <div class="px-3">
+                    <div class="nav nav-tabs" id="loanTabs" role="tablist">
                         <button class="nav-link active" data-bs-toggle="tab" data-bs-target="#pending">Pending</button>
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#approved">Approved</button>
                         <button class="nav-link" data-bs-toggle="tab" data-bs-target="#rejected">Rejected</button>
                     </div>
                 </div>
 
-                <div class="card-body">
+                <div class="card-body px-3 pb-4 pt-0">
                     <div class="tab-content" id="loanTabsContent">
-                        <!-- Pending Loans -->
+                        
                         <div class="tab-pane fade show active" id="pending">
-                            <table class="table table-hover">
+                            <table class="custom-table">
                                 <thead>
-                                    <tr><th>Date</th><th>Applicant(s)</th><th>Amount</th><th class="text-end">Actions</th></tr>
+                                    <tr><th>Date</th><th>Applicant Details</th><th>Amount</th><th class="text-end">Decide</th></tr>
                                 </thead>
                                 <tbody>
                                     <% const pendingLoans = allLoans.filter(l => l.status === 'PENDING'); %>
                                     <% if (pendingLoans.length === 0) { %>
-                                        <tr><td colspan="4" class="text-center text-muted">No pending loans.</td></tr>
+                                        <tr><td colspan="4" class="text-center text-muted py-5">No pending applications found in the queue.</td></tr>
                                     <% } else { pendingLoans.forEach(loan => { %>
                                         <tr>
-                                            <td><%= new Date(loan.request_date).toLocaleDateString() %></td>
-                                            <td><%= loan.applicant_names %> <br><small class="text-muted"><%= loan.account_number %></small></td>
-                                            <td>$<%= parseFloat(loan.amount).toFixed(2) %></td>
+                                            <td class="text-muted"><%= new Date(loan.request_date).toLocaleDateString() %></td>
+                                            <td class="user-info">
+                                                <div class="fw-bold"><%= loan.applicant_names %></div>
+                                                <small>ID: <%= loan.account_number %></small>
+                                            </td>
+                                            <td class="fw-bold text-gradient">$<%= parseFloat(loan.amount).toFixed(2) %></td>
                                             <td class="text-end">
                                                 <form action="/admin/loans/approve/<%= loan.loan_id %>" method="POST" class="d-inline">
-                                                    <button type="submit" class="btn btn-sm btn-success">Approve</button>
+                                                    <button type="submit" class="action-btn btn-approve" title="Approve"><i class="fas fa-check"></i></button>
                                                 </form>
-                                                <form action="/admin/loans/reject/<%= loan.loan_id %>" method="POST" class="d-inline">
-                                                    <button type="submit" class="btn btn-sm btn-danger">Reject</button>
+                                                <form action="/admin/loans/reject/<%= loan.loan_id %>" method="POST" class="d-inline ms-2">
+                                                    <button type="submit" class="action-btn btn-reject" title="Reject"><i class="fas fa-times"></i></button>
                                                 </form>
                                             </td>
                                         </tr>
@@ -185,38 +429,42 @@
                             </table>
                         </div>
 
-                        <!-- Approved Loans -->
                         <div class="tab-pane fade" id="approved">
-                            <table class="table table-hover">
-                                <thead><tr><th>Date</th><th>Applicant(s)</th><th>Amount</th></tr></thead>
+                            <table class="custom-table">
+                                <thead><tr><th>Date Decided</th><th>Applicant Details</th><th>Amount</th></tr></thead>
                                 <tbody>
                                     <% const approvedLoans = allLoans.filter(l => l.status === 'APPROVED'); %>
                                     <% if (approvedLoans.length === 0) { %>
-                                        <tr><td colspan="3" class="text-center text-muted">No approved loans.</td></tr>
+                                        <tr><td colspan="3" class="text-center text-muted py-5">No approved loans found.</td></tr>
                                     <% } else { approvedLoans.forEach(loan => { %>
                                         <tr>
-                                            <td><%= new Date(loan.decision_date).toLocaleDateString() %></td>
-                                            <td><%= loan.applicant_names %> <br><small class="text-muted"><%= loan.account_number %></small></td>
-                                            <td>$<%= parseFloat(loan.amount).toFixed(2) %></td>
+                                            <td class="text-muted"><%= new Date(loan.decision_date).toLocaleDateString() %></td>
+                                            <td class="user-info">
+                                                <div class="fw-bold"><%= loan.applicant_names %></div>
+                                                <small>ID: <%= loan.account_number %></small>
+                                            </td>
+                                            <td class="fw-bold text-success">$<%= parseFloat(loan.amount).toFixed(2) %></td>
                                         </tr>
                                     <% }); } %>
                                 </tbody>
                             </table>
                         </div>
 
-                        <!-- Rejected Loans -->
                         <div class="tab-pane fade" id="rejected">
-                            <table class="table table-hover">
-                                <thead><tr><th>Date</th><th>Applicant(s)</th><th>Amount</th></tr></thead>
+                            <table class="custom-table">
+                                <thead><tr><th>Date Decided</th><th>Applicant Details</th><th>Amount</th></tr></thead>
                                 <tbody>
                                     <% const rejectedLoans = allLoans.filter(l => l.status === 'REJECTED'); %>
                                     <% if (rejectedLoans.length === 0) { %>
-                                        <tr><td colspan="3" class="text-center text-muted">No rejected loans.</td></tr>
+                                        <tr><td colspan="3" class="text-center text-muted py-5">No rejected loans found.</td></tr>
                                     <% } else { rejectedLoans.forEach(loan => { %>
                                         <tr>
-                                            <td><%= new Date(loan.decision_date).toLocaleDateString() %></td>
-                                            <td><%= loan.applicant_names %> <br><small class="text-muted"><%= loan.account_number %></small></td>
-                                            <td>$<%= parseFloat(loan.amount).toFixed(2) %></td>
+                                            <td class="text-muted"><%= new Date(loan.decision_date).toLocaleDateString() %></td>
+                                            <td class="user-info">
+                                                <div class="fw-bold"><%= loan.applicant_names %></div>
+                                                <small>ID: <%= loan.account_number %></small>
+                                            </td>
+                                            <td class="fw-bold text-danger">$<%= parseFloat(loan.amount).toFixed(2) %></td>
                                         </tr>
                                     <% }); } %>
                                 </tbody>
@@ -227,32 +475,35 @@
             </div>
         </div>
 
-        <!-- Recent Transactions -->
-        <div class="col-lg-4">
-            <div class="glass-card p-3">
-                <div class="card-header">
-                    <h5>Recent Transactions</h5>
-                </div>
-                <ul class="list-group list-group-flush">
+        <div class="col-lg-4 animate-in" style="animation-delay: 0.8s;">
+            <div class="ultra-card h-100 p-4">
+                <h5 class="fw-bold mb-4"><i class="fas fa-history me-2 text-info"></i>Live Feed</h5>
+                
+                <div class="d-flex flex-column gap-2">
                     <% recentTransactions.forEach(tx => { %>
-                        <li class="list-group-item bg-transparent text-light border-bottom">
-                            <div class="d-flex justify-content-between">
-                                <strong><%= tx.transaction_type %></strong>
-                                <small class="text-muted"><%= new Date(tx.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %></small>
+                        <div class="transaction-item">
+                            <div>
+                                <div class="tx-type text-light"><%= tx.transaction_type %></div>
+                                <div class="tx-time">
+                                    <%= new Date(tx.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) %> • 
+                                    <% if (tx.transaction_type === 'DEPOSIT' || tx.transaction_type === 'LOAN') { %>
+                                        To: <%= tx.to_acc %>
+                                    <% } else if (tx.transaction_type === 'WITHDRAWAL') { %>
+                                        From: <%= tx.from_acc %>
+                                    <% } else { %>
+                                        <%= tx.from_acc %> <i class="fas fa-arrow-right mx-1" style="font-size: 0.7em;"></i> <%= tx.to_acc %>
+                                    <% } %>
+                                </div>
                             </div>
-                            <p class="mb-1">$<%= parseFloat(tx.amount).toFixed(2) %></p>
-                            <small class="text-muted">
-                                <% if (tx.transaction_type === 'DEPOSIT' || tx.transaction_type === 'LOAN') { %>
-                                    To: <%= tx.to_acc %>
-                                <% } else if (tx.transaction_type === 'WITHDRAWAL') { %>
-                                    From: <%= tx.from_acc %>
-                                <% } else { %>
-                                    <%= tx.from_acc %> → <%= tx.to_acc %>
-                                <% } %>
-                            </small>
-                        </li>
+                            <div class="tx-amount <%= tx.transaction_type === 'DEPOSIT' ? 'text-success' : 'text-light' %>">
+                                $<%= parseFloat(tx.amount).toFixed(2) %>
+                            </div>
+                        </div>
                     <% }); %>
-                </ul>
+                    <% if (recentTransactions.length === 0) { %>
+                        <div class="text-center text-muted py-4">No recent activity</div>
+                    <% } %>
+                </div>
             </div>
         </div>
     </div>

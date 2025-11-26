@@ -1,171 +1,323 @@
 <%- include('partials/header') %>
 
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-    /* Inherit dashboard theme */
+    :root {
+        --bg-deep: #030014;
+        --glass-bg: rgba(255, 255, 255, 0.05); /* Slightly lighter for better contrast */
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-highlight: rgba(255, 255, 255, 0.2);
+        --primary-glow: #6366f1;
+        --success-glow: #10b981;
+        --text-main: #ffffff;
+        --text-secondary: #cbd5e1; /* Bright Blue-Grey for descriptions */
+    }
+
     body {
-        background: linear-gradient(135deg, #0a0a0f 0%, #14141f 50%, #0f0f1a 100%);
-        color: #ffffff;
-        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-deep);
+        background-image: 
+            radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 25%),
+            radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 25%);
+        color: var(--text-main);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
     }
 
-    .glass-card {
-        background: rgba(26, 26, 46, 0.6);
-        backdrop-filter: blur(25px);
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-        transition: 0.3s ease;
+    /* --- Typography Fixes --- */
+    h1, h2, h3, h4, h5 { font-weight: 700; color: #fff; }
+
+    /* OVERRIDE BOOTSTRAP TEXT-MUTED */
+    .text-muted {
+        color: var(--text-secondary) !important;
+        font-weight: 400;
+        opacity: 0.9;
     }
 
-    .glass-card:hover {
-        transform: translateY(-5px);
+    .small {
+        font-size: 0.9rem; /* Slightly larger for readability */
     }
 
-    .btn-outline-primary {
-        border-radius: 12px;
-        border: 1px solid rgba(102, 126, 234, 0.6);
-        color: #aab6ff;
-        font-weight: 600;
-        transition: all 0.2s ease;
-    }
-
-    .btn-outline-primary:hover {
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-    }
-
-    .btn-outline-secondary {
-        border-radius: 12px;
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: white;
-    }
-
-    .btn-outline-secondary:hover {
-        background: rgba(255, 255, 255, 0.1);
-    }
-
-    .table {
-        color: white;
-        border-color: rgba(255, 255, 255, 0.08);
-    }
-
-    .table-hover tbody tr:hover {
-        background: rgba(102, 126, 234, 0.1);
-    }
-
-    .command-center-header h1 {
-        font-weight: 800;
-        font-size: 2.5rem;
-        background: linear-gradient(135deg, #ffffff 0%, #a0a0b8 100%);
+    .text-gradient {
+        background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
     }
 
-    .query-section-title {
-        font-weight: 600;
-        font-size: 1.3rem;
-        color: #aab6ff;
+    /* --- Glass Components --- */
+    .ultra-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        height: 100%;
+        position: relative;
     }
 
-    input.form-control {
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.15);
+    .ultra-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; height: 1px;
+        background: linear-gradient(90deg, transparent, var(--glass-highlight), transparent);
+        opacity: 0.5;
+    }
+
+    .ultra-card:hover {
+        border-color: var(--glass-highlight);
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    }
+
+    /* --- Buttons & Inputs --- */
+    .btn-glass {
+        background: rgba(255, 255, 255, 0.1); /* Increased opacity */
+        border: 1px solid var(--glass-border);
         color: #fff;
-        border-radius: 10px;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    input.form-control::placeholder {
-        color: #aaa;
+    .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: var(--primary-glow);
+        color: white;
+        box-shadow: 0 0 20px rgba(99, 102, 241, 0.2);
+    }
+
+    .btn-primary-glow {
+        background: linear-gradient(135deg, #4f46e5 0%, #6366f1 100%);
+        border: none;
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 12px;
+        font-weight: 600;
+        width: 100%;
+        box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary-glow:hover {
+        box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
+        transform: translateY(-2px);
+    }
+
+    .form-control {
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid var(--glass-border);
+        color: white;
+        border-radius: 12px;
+        padding: 0.75rem 1rem;
+    }
+
+    .form-control:focus {
+        background: rgba(0, 0, 0, 0.6);
+        border-color: var(--primary-glow);
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        color: white;
+    }
+
+    /* Fix Placeholder Visibility */
+    .form-control::placeholder { 
+        color: rgba(255, 255, 255, 0.5) !important; 
+        opacity: 1;
+    }
+
+    /* --- Feature Icons --- */
+    .feature-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .icon-balance { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .icon-tx { background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+    .icon-loan { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+
+    /* --- Table Styles --- */
+    .custom-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0 0.8rem;
+    }
+
+    .custom-table thead th {
+        color: #a0a0b8; /* Lighter header text */
+        font-weight: 600;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        padding: 0 1.5rem 0.5rem;
+        border: none;
+    }
+
+    .custom-table tbody tr {
+        background: rgba(255, 255, 255, 0.03);
+        transition: all 0.2s;
+    }
+
+    .custom-table tbody tr td {
+        padding: 1.25rem 1.5rem;
+        vertical-align: middle;
+        border: none;
+        color: #fff;
+        font-weight: 500;
+    }
+
+    .custom-table tbody tr td:first-child { border-radius: 16px 0 0 16px; }
+    .custom-table tbody tr td:last-child { border-radius: 0 16px 16px 0; }
+
+    .custom-table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.08);
+        transform: scale(1.005);
+    }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .animate-in {
+        animation: fadeInUp 0.6s ease-out forwards;
+        opacity: 0;
     }
 
     .no-data {
-        color: #aaa;
         text-align: center;
-        padding: 1.5rem;
+        padding: 3rem;
+        color: #a0a0b8;
         font-style: italic;
     }
 </style>
 
-<div class="container-fluid py-4 px-lg-5">
+<div class="container-fluid py-5 px-lg-5">
 
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4 command-center-header">
-        <h1>Bank Insights</h1>
-        <div class="d-flex gap-3">
-            <a href="/admin/dashboard" class="btn btn-outline-secondary">Back to Dashboard</a>
+    <div class="d-flex justify-content-between align-items-center mb-5 animate-in" style="animation-delay: 0.1s;">
+        <div>
+            <h6 class="text-uppercase text-muted fw-bold mb-2">Analytics Module</h6>
+            <h1 class="text-gradient mb-0">Bank Insights</h1>
+        </div>
+        <div>
+            <a href="/admin/dashboard" class="btn btn-glass">
+                <i class="fas fa-arrow-left me-2"></i>Back to Command Center
+            </a>
         </div>
     </div>
 
-    <!-- Row: Queries -->
-    <div class="row g-4 mb-4">
+    <div class="row g-4 mb-5">
 
-        <!-- Query 1: High Balance -->
-        <div class="col-lg-4">
-            <div class="glass-card p-4 h-100">
-                <h5 class="query-section-title mb-3">Customers with Balance &gt; X</h5>
+        <div class="col-lg-4 animate-in" style="animation-delay: 0.2s;">
+            <div class="ultra-card p-4">
+                <div class="feature-icon icon-balance">
+                    <i class="fas fa-coins"></i>
+                </div>
+                <h5 class="mb-2 text-white">High Net-Worth Search</h5>
+                <p class="text-muted small mb-4">
+                    Filter customers maintaining a balance above a specific threshold.
+                </p>
                 <form action="/admin/insights/high-balance" method="POST">
-                    <input type="number" name="minBalance" class="form-control mb-3" placeholder="Enter amount (₹)" required>
-                    <button type="submit" class="btn btn-outline-primary w-100">Show Results</button>
+                    <div class="mb-3">
+                        <input type="number" name="minBalance" class="form-control" placeholder="Enter threshold amount (₹)" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary-glow">
+                        <i class="fas fa-search me-2"></i>Analyze Data
+                    </button>
                 </form>
-                <p class="text-muted small mt-3">
-                    Displays all customers having account balance greater than the given amount.
-                </p>
             </div>
         </div>
 
-        <!-- Query 2: Most Transaction Customers -->
-        <div class="col-lg-4">
-            <div class="glass-card p-4 h-100">
-                <h5 class="query-section-title mb-3">Top Transaction Customers</h5>
-                <p class="text-muted small mb-3">
-                    Shows the most active customers based on their total number of transactions (Deposits, Withdrawals, Transfers).
+        <div class="col-lg-4 animate-in" style="animation-delay: 0.3s;">
+            <div class="ultra-card p-4 d-flex flex-column">
+                <div class="feature-icon icon-tx">
+                    <i class="fas fa-exchange-alt"></i>
+                </div>
+                <h5 class="mb-2 text-white">Transaction Volume Leaders</h5>
+                <p class="text-muted small mb-4 flex-grow-1">
+                    Identify the most active users based on total frequency of deposits, withdrawals, and transfers.
                 </p>
-                <a href="/admin/insights/top-transactions" class="btn btn-outline-primary w-100">View Results</a>
+                <a href="/admin/insights/top-transactions" class="btn btn-glass w-100 justify-content-center">
+                    <i class="fas fa-chart-bar me-2"></i>Generate Report
+                </a>
             </div>
         </div>
 
-        <!-- Query 3: Total Approved Loan per Customer -->
-        <div class="col-lg-4">
-            <div class="glass-card p-4 h-100">
-                <h5 class="query-section-title mb-3">Top Loan Customers</h5>
-                <p class="text-muted small mb-3">
-                    Lists customers with the highest total approved loan amount. Aggregates all approved loans per customer.
+        <div class="col-lg-4 animate-in" style="animation-delay: 0.4s;">
+            <div class="ultra-card p-4 d-flex flex-column">
+                <div class="feature-icon icon-loan">
+                    <i class="fas fa-hand-holding-usd"></i>
+                </div>
+                <h5 class="mb-2 text-white">Top Credit Exposure</h5>
+                <p class="text-muted small mb-4 flex-grow-1">
+                    List customers with the highest cumulative approved loan amounts across all categories.
                 </p>
-                <a href="/admin/insights/top-loans" class="btn btn-outline-primary w-100">View Results</a>
+                <a href="/admin/insights/top-loans" class="btn btn-glass w-100 justify-content-center">
+                    <i class="fas fa-file-invoice-dollar me-2"></i>Generate Report
+                </a>
             </div>
         </div>
     </div>
 
-    <!-- Results Section -->
-    <% if (results && results.length > 0) { %>
-        <div class="glass-card p-4">
-            <h4 class="query-section-title mb-4"><%= title %></h4>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <% Object.keys(results[0]).forEach(col => { %>
-                                <th><%= col.replaceAll('_', ' ').toUpperCase() %></th>
-                            <% }); %>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% results.forEach(row => { %>
+    <div class="animate-in" style="animation-delay: 0.5s;">
+        <% if (results && results.length > 0) { %>
+            <div class="ultra-card p-4">
+                <div class="d-flex align-items-center mb-4">
+                    <div class="me-3 p-2 rounded-circle" style="background: rgba(99, 102, 241, 0.1); color: var(--primary-glow);">
+                        <i class="fas fa-table fa-lg"></i>
+                    </div>
+                    <h4 class="mb-0 text-white"><%= title %></h4>
+                </div>
+                
+                <div class="table-responsive">
+                    <table class="custom-table">
+                        <thead>
                             <tr>
-                                <% Object.values(row).forEach(val => { %>
-                                    <td><%= val %></td>
+                                <% Object.keys(results[0]).forEach(col => { %>
+                                    <th><%= col.replaceAll('_', ' ').toUpperCase() %></th>
                                 <% }); %>
                             </tr>
-                        <% }); %>
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                            <% results.forEach(row => { %>
+                                <tr>
+                                    <% Object.values(row).forEach(val => { %>
+                                        <td>
+                                            <% if (typeof val === 'number' && val > 1000) { %>
+                                                <%= val.toLocaleString() %>
+                                            <% } else { %>
+                                                <%= val %>
+                                            <% } %>
+                                        </td>
+                                    <% }); %>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
-    <% } else if (results) { %>
-        <div class="glass-card p-4 no-data">
-            <p>No records found for the selected query.</p>
-        </div>
-    <% } %>
+        <% } else if (results) { %>
+            <div class="ultra-card no-data">
+                <i class="fas fa-folder-open fa-3x mb-3 text-muted"></i>
+                <p class="mb-0 text-muted">No records found for the selected criteria.</p>
+            </div>
+        <% } %>
+    </div>
 
 </div>
 

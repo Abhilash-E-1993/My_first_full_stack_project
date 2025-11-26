@@ -6,567 +6,277 @@
     <title>Welcome - Gemini Bank</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+
     <style>
-        /* GLOBAL & LANDING PAGE STYLES */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+        /* --- GLOBAL VARIABLES & RESET --- */
+        :root {
+            --neon-cyan: #00f3ff;
+            --neon-purple: #bc13fe;
+            --deep-bg: #050508;
         }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            font-family: 'Outfit', sans-serif;
+            background-color: var(--deep-bg);
+            color: #fff;
             overflow: hidden;
         }
 
-        /* --- NEW QUANTUM VAULT STYLES --- */
-        
-        /* MAIN VAULT CONTAINER */
-        .vault-scene {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            perspective: 3000px;
-            transform-style: preserve-3d;
-            z-index: 99999;
+        /* CINEMATIC NOISE OVERLAY */
+        .noise-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyBAMAAADsEZWCAAAAGFBMVEUAAAA5OTkAAAAAAAAAAABMTExERERmZmZnOTGdAAAACHRSTlMAMwA5ED0fMEjd53OQAAAAQElEQVQ4y2NgQAX8DIwsywQYGJg2MzAwmTIwME2D8BkYmDYxMDDNY2BgOgqWZwTz2RgYmI6C+SwMDOw7oZr4AQB7nQus0+WjSAAAAABJRU5ErkJggg==');
+            opacity: 0.03; pointer-events: none; z-index: 999999;
         }
 
-        /* DEEP SPACE BACKGROUND */
+        /* --- VAULT SCENE STYLES (UNCHANGED) --- */
+        .vault-scene {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: #000; display: flex; align-items: center; justify-content: center;
+            perspective: 3000px; transform-style: preserve-3d; z-index: 99999;
+        }
         .deep-space {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(ellipse at 20% 30%, #1a0033 0%, transparent 40%),
-                radial-gradient(ellipse at 60% 70%, #001a33 0%, transparent 45%),
-                radial-gradient(ellipse at 80% 10%, #0a001a 0%, transparent 50%),
-                radial-gradient(circle at center, #000511 0%, #000 70%);
+            position: absolute; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #0b0b15 0%, #000 80%);
             animation: spaceRotate 60s linear infinite;
         }
+        @keyframes spaceRotate { 0% { transform: scale(1.1) rotate(0deg); } 100% { transform: scale(1.1) rotate(360deg); } }
 
-        @keyframes spaceRotate {
-            0% { transform: rotate(0deg) scale(1.1); }
-            100% { transform: rotate(360deg) scale(1.1); }
-        }
-
-        /* NEBULA CLOUDS */
         .nebula-layer {
-            position: absolute;
-            width: 150%;
-            height: 150%;
-            top: -25%;
-            left: -25%;
-            opacity: 0.4;
-            mix-blend-mode: screen;
-            filter: blur(40px);
-            background: 
-                radial-gradient(circle at 20% 50%, rgba(138, 43, 226, 0.4) 0%, transparent 50%),
-                radial-gradient(circle at 80% 50%, rgba(30, 144, 255, 0.4) 0%, transparent 50%),
-                radial-gradient(circle at 50% 20%, rgba(255, 20, 147, 0.3) 0%, transparent 50%);
+            position: absolute; width: 150%; height: 150%; top: -25%; left: -25%; opacity: 0.3;
+            mix-blend-mode: screen; filter: blur(50px);
+            background: radial-gradient(circle at 50% 50%, rgba(138, 43, 226, 0.3), transparent 60%);
             animation: nebulaDrift 30s ease-in-out infinite alternate;
         }
+        @keyframes nebulaDrift { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(-5%, 5%) rotate(5deg); } }
 
-        @keyframes nebulaDrift {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            100% { transform: translate(-5%, 5%) rotate(5deg); }
-        }
-
-        /* STELLAR GRID */
         .stellar-grid {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(rgba(0, 255, 255, 0.01) 0.5px, transparent 0.5px),
-                linear-gradient(90deg, rgba(0, 255, 255, 0.01) 0.5px, transparent 0.5px);
-            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            position: absolute; width: 100%; height: 100%;
+            background-image: linear-gradient(rgba(0, 255, 255, 0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 255, 255, 0.05) 1px, transparent 1px);
+            background-size: 100px 100px; transform: rotateX(60deg) translateZ(-100px);
             animation: gridPerspective 20s ease-in-out infinite;
-            transform: rotateX(60deg) translateZ(-100px);
-            transform-origin: center center;
+            mask-image: linear-gradient(to bottom, transparent, black 40%, black 80%, transparent); -webkit-mask-image: linear-gradient(to bottom, transparent, black 40%, black 80%, transparent);
         }
+        @keyframes gridPerspective { 0%, 100% { transform: rotateX(60deg) translateZ(-100px) scale(1); } 50% { transform: rotateX(60deg) translateZ(-50px) scale(1.1); } }
 
-        @keyframes gridPerspective {
-            0%, 100% { transform: rotateX(60deg) translateZ(-100px) scale(1); }
-            50% { transform: rotateX(60deg) translateZ(-50px) scale(1.1); }
-        }
-
-        /* QUANTUM PARTICLES SYSTEM */
-        .quantum-field {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            transform-style: preserve-3d;
-        }
-
+        .quantum-field { position: absolute; width: 100%; height: 100%; transform-style: preserve-3d; }
         .quantum-particle {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: #fff;
-            border-radius: 50%;
-            box-shadow: 
-                0 0 10px currentColor,
-                0 0 20px currentColor,
-                0 0 30px currentColor;
-            animation: quantumOrbit 20s linear infinite;
-            transform-style: preserve-3d;
+            position: absolute; width: 3px; height: 3px; background: #fff; border-radius: 50%;
+            box-shadow: 0 0 15px currentColor; animation: quantumOrbit 20s linear infinite;
         }
+        @keyframes quantumOrbit { 0% { transform: rotateY(0deg) rotateX(0deg) translateZ(300px); } 100% { transform: rotateY(360deg) rotateX(360deg) translateZ(300px); } }
 
-        @keyframes quantumOrbit {
-            0% { transform: rotateY(0deg) rotateX(0deg) translateZ(300px); }
-            100% { transform: rotateY(360deg) rotateX(360deg) translateZ(300px); }
-        }
-
-        /* ENERGY RINGS */
         .energy-ring {
-            position: absolute;
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            border-radius: 50%;
-            animation: ringPulse 4s ease-in-out infinite;
+            position: absolute; border: 1px solid rgba(0, 243, 255, 0.15); border-radius: 50%;
+            animation: ringPulse 4s ease-in-out infinite; box-shadow: 0 0 30px rgba(0, 243, 255, 0.05);
         }
-        .energy-ring:nth-of-type(1) { width: 600px; height: 600px; animation-delay: 0s; border-color: rgba(0, 255, 255, 0.2); }
-        .energy-ring:nth-of-type(2) { width: 500px; height: 500px; animation-delay: 0.5s; border-color: rgba(138, 43, 226, 0.2); }
-        .energy-ring:nth-of-type(3) { width: 400px; height: 400px; animation-delay: 1s; border-color: rgba(255, 20, 147, 0.2); }
+        .energy-ring:nth-of-type(1) { width: 700px; height: 700px; animation-delay: 0s; }
+        .energy-ring:nth-of-type(2) { width: 550px; height: 550px; animation-delay: 0.5s; border-color: rgba(188, 19, 254, 0.15); }
+        .energy-ring:nth-of-type(3) { width: 400px; height: 400px; animation-delay: 1s; }
+        @keyframes ringPulse { 0%, 100% { transform: scale(1) rotateZ(0deg); opacity: 0.3; } 50% { transform: scale(1.1) rotateZ(180deg); opacity: 0.8; } }
 
-        @keyframes ringPulse {
-            0%, 100% { transform: scale(1) rotateZ(0deg); opacity: 0.3; }
-            50% { transform: scale(1.2) rotateZ(180deg); opacity: 0.8; }
-        }
-
-        /* MAIN VAULT STRUCTURE */
         .vault-chamber {
-            position: relative;
-            width: 500px;
-            height: 500px;
-            transform-style: preserve-3d;
-            /* MODIFIED: Changed animation to the new, smoother materialization effect */
+            position: relative; width: 500px; height: 500px; transform-style: preserve-3d;
             animation: vaultMaterialize 2.5s cubic-bezier(0.23, 1, 0.32, 1);
         }
+        @keyframes vaultMaterialize { 0% { transform: translateZ(-3000px) scale(0.1); opacity: 0; filter: blur(20px); } 70% { transform: translateZ(50px) scale(1.05); opacity: 1; filter: blur(2px); } 100% { transform: translateZ(0) scale(1); opacity: 1; filter: blur(0); } }
 
-        /* MODIFIED: Replaced old 'vaultInitialize' with new 'vaultMaterialize' keyframes for a smoother entrance */
-        @keyframes vaultMaterialize {
-            0% {
-                transform: translateZ(-3000px) scale(0.1);
-                opacity: 0;
-                filter: blur(20px);
-            }
-            70% {
-                transform: translateZ(50px) scale(1.05);
-                opacity: 1;
-                filter: blur(2px);
-            }
-            100% {
-                transform: translateZ(0) scale(1);
-                opacity: 1;
-                filter: blur(0);
-            }
-        }
-
-        /* VAULT FRAME */
         .vault-frame {
-            position: absolute;
-            width: 100%; height: 100%;
-            border: 4px solid;
-            border-image: linear-gradient(45deg, #00ffff, #ff00ff, #00ffff) 1;
-            border-radius: 30px;
-            background: linear-gradient(135deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 20, 40, 0.9) 100%);
-            box-shadow: inset 0 0 100px rgba(0, 255, 255, 0.2), 0 0 200px rgba(0, 255, 255, 0.3), 0 0 300px rgba(138, 43, 226, 0.2);
-            animation: framePulse 3s ease-in-out infinite;
+            position: absolute; width: 100%; height: 100%; border: 2px solid rgba(0, 243, 255, 0.3);
+            border-radius: 30px; background: rgba(5, 5, 10, 0.8); backdrop-filter: blur(10px);
+            box-shadow: 0 0 100px rgba(0, 243, 255, 0.1); animation: framePulse 3s ease-in-out infinite;
         }
 
-        @keyframes framePulse {
-            0%, 100% { box-shadow: inset 0 0 100px rgba(0, 255, 255, 0.2), 0 0 200px rgba(0, 255, 255, 0.3); }
-            50% { box-shadow: inset 0 0 150px rgba(138, 43, 226, 0.3), 0 0 300px rgba(138, 43, 226, 0.4); }
-        }
-
-        /* VAULT DOOR */
         .vault-door {
-            position: absolute;
-            width: 100%; height: 100%;
-            border-radius: 25px;
-            background: radial-gradient(circle at 30% 30%, rgba(138, 43, 226, 0.2) 0%, transparent 60%), linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
-            transform-origin: left center;
-            transition: transform 3s cubic-bezier(0.645, 0.045, 0.355, 1);
-            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.5), 0 20px 60px rgba(0, 0, 0, 0.5);
-            overflow: hidden;
+            position: absolute; width: 100%; height: 100%; border-radius: 25px;
+            background: radial-gradient(circle at 50% 50%, #1a1a2e 0%, #0a0a0a 100%);
+            transform-origin: left center; transition: transform 3s cubic-bezier(0.645, 0.045, 0.355, 1);
+            overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .vault-door.opening { transform: perspective(1000px) rotateY(-120deg); }
 
         .door-tech-overlay {
-            position: absolute;
-            width: 100%; height: 100%;
-            opacity: 0.5;
-            background: repeating-linear-gradient(0deg, transparent 0, rgba(0, 255, 255, 0.1) 1px, transparent 2px, transparent 20px), repeating-linear-gradient(90deg, transparent 0, rgba(0, 255, 255, 0.1) 1px, transparent 2px, transparent 20px);
-            animation: techScan 10s linear infinite;
+            position: absolute; width: 100%; height: 100%; opacity: 0.2;
+            background-image: linear-gradient(0deg, transparent 24%, rgba(0, 255, 255, .3) 25%, rgba(0, 255, 255, .3) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, .3) 75%, rgba(0, 255, 255, .3) 76%, transparent 77%, transparent), linear-gradient(90deg, transparent 24%, rgba(0, 255, 255, .3) 25%, rgba(0, 255, 255, .3) 26%, transparent 27%, transparent 74%, rgba(0, 255, 255, .3) 75%, rgba(0, 255, 255, .3) 76%, transparent 77%, transparent);
+            background-size: 50px 50px; animation: techScan 10s linear infinite;
         }
+        @keyframes techScan { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
 
-        @keyframes techScan {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(20px, 20px); }
-        }
-
-        /* CENTRAL LOCK MECHANISM */
-        .lock-mechanism {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 300px; height: 300px;
-        }
-
+        .lock-mechanism { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 300px; height: 300px; }
         .lock-ring {
-            position: absolute;
-            width: 100%; height: 100%;
-            border: 3px solid; border-radius: 50%;
-            border-color: transparent;
-            border-top-color: rgba(0, 255, 255, 0.8);
-            border-right-color: rgba(138, 43, 226, 0.8);
-            animation: lockRotate 3s linear infinite;
+            position: absolute; width: 100%; height: 100%; border: 2px solid transparent;
+            border-radius: 50%; border-top-color: var(--neon-cyan); border-right-color: var(--neon-purple);
+            animation: lockRotate 3s linear infinite; filter: drop-shadow(0 0 5px var(--neon-cyan));
         }
-        .lock-ring:nth-child(1) { width: 100%; height: 100%; animation-direction: normal; animation-duration: 3s; }
-        .lock-ring:nth-child(2) { width: 80%; height: 80%; top: 10%; left: 10%; animation-direction: reverse; animation-duration: 2.5s; border-top-color: rgba(255, 20, 147, 0.8); border-right-color: rgba(30, 144, 255, 0.8); }
-        .lock-ring:nth-child(3) { width: 60%; height: 60%; top: 20%; left: 20%; animation-direction: normal; animation-duration: 2s; border-top-color: rgba(255, 215, 0, 0.8); border-right-color: rgba(0, 255, 127, 0.8); }
+        .lock-ring:nth-child(2) { width: 70%; height: 70%; top: 15%; left: 15%; animation-direction: reverse; border-top-color: #fff; }
+        .lock-ring:nth-child(3) { width: 40%; height: 40%; top: 30%; left: 30%; border-top-color: gold; }
         .lock-ring.unlocking { animation: unlockSpin 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards; }
+        @keyframes lockRotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes unlockSpin { 0% { transform: rotate(0deg) scale(1); } 50% { transform: rotate(720deg) scale(1.2); } 100% { transform: rotate(1440deg) scale(0); opacity: 0; } }
 
-        @keyframes lockRotate {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        @keyframes unlockSpin {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(720deg) scale(1.2); }
-            100% { transform: rotate(1440deg) scale(0); opacity: 0; }
-        }
-
-        /* CORE ENERGY ORB */
         .energy-core {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100px; height: 100px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #ffffff 0%, transparent 50%), radial-gradient(circle at center, #00ffff 0%, #0080ff 50%, #004080 100%);
-            box-shadow: 0 0 50px #00ffff, 0 0 100px #0080ff, 0 0 150px #004080, inset 0 0 50px rgba(255, 255, 255, 0.5);
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 60px; height: 60px; border-radius: 50%; background: #fff; box-shadow: 0 0 40px var(--neon-cyan);
             animation: corePulse 2s ease-in-out infinite;
         }
         .energy-core.charged { animation: coreCharge 2s ease-out forwards; }
-        
-        @keyframes corePulse {
-            0%, 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 50px #00ffff, 0 0 100px #0080ff, 0 0 150px #004080; }
-            50% { transform: translate(-50%, -50%) scale(1.1); box-shadow: 0 0 80px #00ffff, 0 0 160px #0080ff, 0 0 240px #004080; }
-        }
-        @keyframes coreCharge {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(2); box-shadow: 0 0 100px #fff, 0 0 200px #00ffff, 0 0 300px #0080ff; }
-            100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-        }
+        @keyframes corePulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; } 50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; box-shadow: 0 0 60px var(--neon-cyan); } }
+        @keyframes coreCharge { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(3); background: #fff; box-shadow: 0 0 100px #fff; } 100% { transform: translate(-50%, -50%) scale(0); opacity: 0; } }
 
-        /* SECURITY SCANNER */
         .scanner-beam {
-            position: absolute;
-            width: 100%; height: 4px;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 255, 0.8), rgba(255, 255, 255, 1), rgba(0, 255, 255, 0.8), transparent);
-            top: -10px; opacity: 0;
-            box-shadow: 0 0 20px rgba(0, 255, 255, 1), 0 0 40px rgba(0, 255, 255, 0.8);
+            position: absolute; width: 100%; height: 2px; background: var(--neon-cyan); top: -10px; opacity: 0; box-shadow: 0 0 15px var(--neon-cyan);
         }
         .scanner-beam.scanning { animation: scanSequence 3s ease-in-out; }
+        @keyframes scanSequence { 0% { top: -10px; opacity: 0; } 10% { opacity: 1; } 50% { top: 100%; } 90% { opacity: 1; } 100% { top: 110%; opacity: 0; } }
 
-        @keyframes scanSequence {
-            0% { top: -10px; opacity: 0; }
-            10% { opacity: 1; }
-            50% { top: 100%; }
-            90% { opacity: 1; }
-            100% { top: 110%; opacity: 0; }
-        }
-
-        /* STATUS DISPLAY */
         .status-display {
-            position: absolute;
-            top: 50px; left: 50%;
-            transform: translateX(-50%);
-            text-align: center; color: #00ffff;
-            font-size: 24px; font-weight: 300;
-            letter-spacing: 4px; text-transform: uppercase;
-            text-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
-            opacity: 0;
-            animation: statusFadeIn 1s ease-out forwards;
-            animation-delay: 0.5s;
+            position: absolute; top: 15%; left: 50%; transform: translateX(-50%); text-align: center; color: var(--neon-cyan);
+            font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 500; letter-spacing: 6px; text-transform: uppercase;
+            text-shadow: 0 0 15px var(--neon-cyan); opacity: 0; animation: statusFadeIn 1s ease-out forwards; animation-delay: 0.5s;
         }
-
         @keyframes statusFadeIn { to { opacity: 1; } }
 
-        /* AUTHENTICATION NODES */
-        .auth-nodes {
-            position: absolute;
-            bottom: 80px; left: 50%;
-            transform: translateX(-50%);
-            display: flex; gap: 30px;
-        }
-        .auth-node {
-            width: 30px; height: 30px;
-            border: 2px solid rgba(0, 255, 255, 0.3);
-            background: rgba(0, 20, 40, 0.8);
-            border-radius: 50%; position: relative;
-            transition: all 0.5s ease;
-        }
-        .auth-node::before {
-            content: ''; position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 10px; height: 10px;
-            background: rgba(0, 255, 255, 0.3);
-            border-radius: 50%;
-            transition: all 0.5s ease;
-        }
-        .auth-node.authenticated {
-            border-color: #00ffff;
-            background: rgba(0, 255, 255, 0.1);
-            box-shadow: 0 0 20px #00ffff, inset 0 0 20px rgba(0, 255, 255, 0.3);
-            animation: nodeSuccess 0.5s ease;
-        }
-        .auth-node.authenticated::before {
-            width: 20px; height: 20px;
-            background: #00ffff; box-shadow: 0 0 20px #00ffff;
-        }
+        .auth-nodes { position: absolute; bottom: 15%; left: 50%; transform: translateX(-50%); display: flex; gap: 20px; }
+        .auth-node { width: 15px; height: 15px; border: 1px solid rgba(255,255,255,0.2); background: transparent; transform: rotate(45deg); transition: all 0.3s ease; }
+        .auth-node.authenticated { background: var(--neon-cyan); border-color: var(--neon-cyan); box-shadow: 0 0 15px var(--neon-cyan); animation: nodeSuccess 0.4s ease; }
+        @keyframes nodeSuccess { 0% { transform: rotate(45deg) scale(1); } 50% { transform: rotate(45deg) scale(1.5); } 100% { transform: rotate(45deg) scale(1); } }
 
-        @keyframes nodeSuccess {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.3); }
-            100% { transform: scale(1); }
-        }
+        .progress-bar-container { position: absolute; bottom: 10%; left: 50%; transform: translateX(-50%); width: 300px; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+        .progress-track { width: 100%; height: 100%; overflow: hidden; border-radius: 2px; }
+        .progress-fill-vault { height: 100%; width: 0%; background: linear-gradient(90deg, var(--neon-cyan), var(--neon-purple)); box-shadow: 0 0 20px var(--neon-cyan); transition: width 0.5s ease; }
 
-        /* PROGRESS INDICATOR */
-        .progress-bar-container { /* Renamed from .progress-ring to avoid conflict */
-            position: absolute;
-            bottom: 150px; left: 50%;
-            transform: translateX(-50%);
-            width: 400px; height: 10px;
-        }
-        .progress-track {
-            width: 100%; height: 100%;
-            background: rgba(0, 255, 255, 0.1);
-            border-radius: 5px; overflow: hidden;
-            border: 1px solid rgba(0, 255, 255, 0.2);
-        }
-        .progress-fill-vault { /* Renamed from .progress-fill */
-            height: 100%;
-            background: linear-gradient(90deg, #00ffff 0%, #0080ff 25%, #8a2be2 50%, #ff1493 75%, #00ffff 100%);
-            background-size: 200% 100%;
-            width: 0%;
-            transition: width 0.5s ease;
-            animation: progressGradient 3s linear infinite;
-            box-shadow: 0 0 20px currentColor;
-        }
-        @keyframes progressGradient {
-            0% { background-position: 0% 0%; }
-            100% { background-position: 200% 0%; }
-        }
-
-        /* PLASMA EFFECTS */
-        .plasma-field {
-            position: absolute;
-            width: 100%; height: 100%;
-            filter: blur(60px); opacity: 0.6;
-            mix-blend-mode: screen; pointer-events: none;
-        }
-        .plasma-blob { position: absolute; border-radius: 50%; animation: plasmaFloat 20s infinite ease-in-out; }
-        .plasma-blob:nth-child(1) { width: 300px; height: 300px; background: radial-gradient(circle, rgba(0, 255, 255, 0.8) 0%, transparent 70%); top: 10%; left: 10%; animation-duration: 15s; }
-        .plasma-blob:nth-child(2) { width: 250px; height: 250px; background: radial-gradient(circle, rgba(138, 43, 226, 0.8) 0%, transparent 70%); bottom: 10%; right: 10%; animation-duration: 18s; animation-delay: -5s; }
-        .plasma-blob:nth-child(3) { width: 200px; height: 200px; background: radial-gradient(circle, rgba(255, 20, 147, 0.8) 0%, transparent 70%); top: 50%; left: 50%; animation-duration: 20s; animation-delay: -10s; }
-
-        @keyframes plasmaFloat {
-            0%, 100% { transform: translate(0, 0) scale(1); }
-            25% { transform: translate(100px, -50px) scale(1.1); }
-            50% { transform: translate(-50px, 100px) scale(0.9); }
-            75% { transform: translate(-100px, -100px) scale(1.05); }
-        }
-
-        /* COMPLETION FLASH */
-        .completion-flash {
-            position: absolute;
-            width: 100%; height: 100%;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, transparent 70%);
-            opacity: 0; pointer-events: none;
-        }
+        .completion-flash { position: absolute; width: 100%; height: 100%; background: #fff; opacity: 0; pointer-events: none; z-index: 100000; }
         .completion-flash.active { animation: flashBurst 1s ease-out; }
-        @keyframes flashBurst {
-            0% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1.2); }
-            100% { opacity: 0; transform: scale(1.5); }
-        }
+        @keyframes flashBurst { 0% { opacity: 0; } 50% { opacity: 1; } 100% { opacity: 0; } }
 
-        /* --- END OF NEW VAULT STYLES --- */
+        .plasma-field { display: none; }
 
-
-        /* MAIN LANDING PAGE STYLES (PRESERVED AS REQUESTED) */
+        /* --- ULTRA PREMIUM MAIN LANDING PAGE --- */
+        
         .main-content {
-            opacity: 0;
-            transform: scale(0.95);
+            opacity: 0; transform: scale(0.95); position: relative; z-index: 10;
             transition: all 1.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
-
-        .main-content.visible {
-            opacity: 1;
-            transform: scale(1);
-        }
+        .main-content.visible { opacity: 1; transform: scale(1); }
 
         .hero-section {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            position: relative;
-            overflow: hidden;
-            padding: 6rem 0;
+            min-height: 100vh; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            position: relative; padding: 6rem 0;
+            background: radial-gradient(circle at 50% 0%, #121225 0%, #000000 100%);
         }
 
-        .hero-content {
-            position: relative;
-            z-index: 10;
-            animation: fadeInUp 1s ease-out;
-        }
-
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(50px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .hero-content { position: relative; z-index: 10; animation: fadeInUp 1s ease-out; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
 
         .hero-title {
-            font-size: clamp(3rem, 8vw, 6rem);
-            font-weight: 900;
-            background: linear-gradient(135deg, #ffffff 0%, #667eea 50%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 2rem;
-            line-height: 1.1;
-            text-shadow: 0 0 40px rgba(102, 126, 234, 0.3);
-            animation: titleGlow 3s ease-in-out infinite alternate;
+            font-family: 'Space Grotesk', sans-serif; font-size: clamp(3.5rem, 6vw, 7rem); font-weight: 700; letter-spacing: -2px;
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.7) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 1.5rem; text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-
-        @keyframes titleGlow {
-            0% { filter: drop-shadow(0 0 20px rgba(102, 126, 234, 0.3)); }
-            100% { filter: drop-shadow(0 0 40px rgba(102, 126, 234, 0.6)); }
-        }
+        .hero-title i { font-size: 3rem; margin-bottom: 1rem; color: var(--neon-cyan); text-shadow: 0 0 30px var(--neon-cyan); }
 
         .hero-subtitle {
-            font-size: 1.4rem; color: rgba(255, 255, 255, 0.85);
-            font-weight: 300; line-height: 1.6; margin-bottom: 3rem;
-            max-width: 600px; margin-left: auto; margin-right: auto;
+            font-size: 1.25rem; color: rgba(255, 255, 255, 0.6); font-weight: 300; line-height: 1.8; margin-bottom: 4rem;
+            max-width: 700px; margin-left: auto; margin-right: auto;
         }
 
-        .hero-buttons { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 3rem; }
+        /* --- FIXED BUTTON STYLES --- */
+        .hero-buttons { display: flex; gap: 2rem; justify-content: center; flex-wrap: wrap; }
 
         .btn-premium {
-            position: relative; padding: 1rem 2.5rem; font-size: 1.1rem;
-            font-weight: 600; border-radius: 50px; border: none;
-            text-decoration: none; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            overflow: hidden; text-transform: uppercase; letter-spacing: 1px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            position: relative; padding: 18px 40px; font-size: 1rem; font-weight: 600; border-radius: 100px; text-decoration: none;
+            text-transform: uppercase; letter-spacing: 2px; font-family: 'Space Grotesk', sans-serif;
+            transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1); display: inline-flex; align-items: center; cursor: pointer;
         }
-        .btn-premium::before {
-            content: ''; position: absolute; top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s;
-        }
-        .btn-premium:hover::before { left: 100%; }
+
+        /* Primary Button */
         .btn-primary-premium {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;
-            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+            background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.2); color: #fff;
+            backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0, 0, 0, 0.5); overflow: hidden;
         }
-        .btn-primary-premium:hover { transform: translateY(-3px); box-shadow: 0 25px 50px rgba(102, 126, 234, 0.6); color: white; }
+        .btn-primary-premium:hover {
+            border-color: var(--neon-cyan); box-shadow: 0 0 40px rgba(0, 243, 255, 0.3); transform: translateY(-3px); color: #fff;
+        }
+        .btn-primary-premium::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 243, 255, 0.2), transparent);
+            transform: skewX(-20deg) translateX(-150%); transition: 0.5s;
+        }
+        .btn-primary-premium:hover::before { transform: skewX(-20deg) translateX(150%); }
+
+        /* Secondary Button - FIXED (Now has a visible box) */
         .btn-secondary-premium {
-            background: rgba(255, 255, 255, 0.1); color: white;
-            border: 2px solid rgba(255, 255, 255, 0.3); backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.02); /* Added slight background */
+            color: #fff; /* Force White Text */
+            border: 1px solid rgba(255, 255, 255, 0.15); /* Added Visible Border */
+            backdrop-filter: blur(5px);
         }
         .btn-secondary-premium:hover {
-            background: rgba(255, 255, 255, 0.2); border-color: rgba(255, 255, 255, 0.5);
-            transform: translateY(-3px); color: white; box-shadow: 0 25px 50px rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.08);
+            border-color: #fff;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            color: #fff;
         }
 
-        /* FLOATING 3D ELEMENTS */
-        .floating-3d { position: absolute; pointer-events: none; opacity: 0.6; }
+        /* FLOATING ELEMENTS - REPOSITIONED TO AVOID OVERLAP */
+        .floating-3d { position: absolute; pointer-events: none; z-index: 1; }
+        
         .floating-card {
-            width: 80px; height: 50px;
-            background: linear-gradient(135deg, rgba(102, 126, 234, 0.8), rgba(118, 75, 162, 0.8));
-            border-radius: 8px; backdrop-filter: blur(10px);
-            animation: float3D 8s ease-in-out infinite;
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            width: 140px; height: 90px; background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3); animation: float3D 8s ease-in-out infinite;
         }
         .floating-coin {
-            width: 40px; height: 40px;
-            background: linear-gradient(135deg, #ffd700, #ffed4a);
-            border-radius: 50%; animation: float3D 6s ease-in-out infinite reverse;
-            box-shadow: 0 10px 30px rgba(255, 215, 0, 0.3);
+            width: 60px; height: 60px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #ffd700, #b8860b);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4); animation: float3D 6s ease-in-out infinite reverse;
         }
-        @keyframes float3D {
-            0%, 100% { transform: translateY(0px) rotateY(0deg) rotateX(0deg); }
-            33% { transform: translateY(-30px) rotateY(120deg) rotateX(10deg); }
-            66% { transform: translateY(-15px) rotateY(240deg) rotateX(-10deg); }
-        }
-        .floating-card:nth-child(1) { top: 20%; left: 10%; animation-delay: 0s; }
-        .floating-card:nth-child(2) { top: 30%; right: 15%; animation-delay: 2s; }
-        .floating-coin:nth-child(3) { bottom: 40%; left: 20%; animation-delay: 1s; }
-        .floating-coin:nth-child(4) { top: 60%; right: 10%; animation-delay: 3s; }
-
-        /* PARTICLE SYSTEM */
-        .particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden; z-index: 1; }
-        .particle {
-            position: absolute; width: 2px; height: 2px;
-            background: rgba(102, 126, 234, 0.6); border-radius: 50%;
-            animation: particleFloat 15s linear infinite;
-        }
-        @keyframes particleFloat {
-            0% { opacity: 0; transform: translateY(100vh) translateX(0); }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { opacity: 0; transform: translateY(-10vh) translateX(100px); }
-        }
+        @keyframes float3D { 0%, 100% { transform: translateY(0) rotateX(0) rotateY(0); } 50% { transform: translateY(-20px) rotateX(5deg) rotateY(5deg); } }
+        
+        /* Moved these far to the corners */
+        .floating-card:nth-child(1) { top: 10%; left: 5%; } 
+        .floating-card:nth-child(2) { bottom: 10%; right: 5%; animation-delay: 2s; }
+        .floating-coin:nth-child(3) { top: 70%; left: 5%; animation-delay: 1s; }
+        .floating-coin:nth-child(4) { top: 10%; right: 5%; animation-delay: 3s; } /* Moved from 20%/15% to 10%/5% */
 
         /* STATS CARDS */
-        .stats-section { margin-top: 4rem; position: relative; z-index: 10; }
+        .stats-section { margin-top: 6rem; position: relative; z-index: 10; }
         .stat-card {
-            background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 2rem; text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.2); transition: all 0.4s ease;
-            animation: statCardAppear 1s ease-out; animation-delay: 1.5s; animation-fill-mode: both;
+            background: rgba(20, 20, 30, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 24px; padding: 3rem 2rem; text-align: center;
+            transition: all 0.4s ease; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            opacity: 0; animation: statCardAppear 1s ease-out forwards; animation-delay: 1.5s;
         }
-        @keyframes statCardAppear {
-            from { opacity: 0; transform: translateY(30px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .stat-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            background: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 25px 50px rgba(102, 126, 234, 0.2);
-        }
-        .stat-number {
-            font-size: 3rem; font-weight: 800;
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            background-clip: text; margin-bottom: 0.5rem;
-        }
-        .stat-label { color: rgba(255, 255, 255, 0.8); font-size: 1.1rem; font-weight: 500; }
+        @keyframes statCardAppear { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* RESPONSIVE DESIGN FOR LANDING PAGE */
+        .stat-card:hover { transform: translateY(-10px); border-color: var(--neon-cyan); box-shadow: 0 20px 50px rgba(0, 243, 255, 0.15); background: rgba(255, 255, 255, 0.03); }
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif; font-size: 3.5rem; font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #aaa 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem; display: block;
+        }
+        .stat-label { color: rgba(255, 255, 255, 0.5); font-size: 0.9rem; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+
+        .particles { pointer-events: none; opacity: 0.4; }
+        .particle { background: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+        
         @media (max-width: 768px) {
-            .hero-section { padding: 4rem 0; }
-            .hero-buttons { flex-direction: column; align-items: center; }
-            .btn-premium { width: 100%; max-width: 300px; }
+            .hero-title { font-size: 3rem; }
+            .hero-buttons { flex-direction: column; width: 100%; padding: 0 20px; }
+            .btn-premium { width: 100%; justify-content: center; }
         }
     </style>
 </head>
 <body>
+    <div class="noise-overlay"></div>
 
     <div class="vault-scene" id="vaultScene">
         <div class="deep-space"></div>
@@ -632,11 +342,11 @@
             <div class="container">
                 <div class="hero-content text-center">
                     <h1 class="hero-title">
-                        <i class="fas fa-university me-3" style="color: rgba(102, 126, 234, 0.8);"></i>
-                        Gemini Bank
+                        <i class="fas fa-gem"></i>
+                        GEMINI BANK
                     </h1>
                     <p class="hero-subtitle">
-                        Your secure and reliable partner in modern digital banking. Experience the future of finance with cutting-edge technology, unparalleled security, and personalized service that adapts to your needs.
+                        The quantum standard for digital finance. Ultra-secure wealth management for the next generation of visionaries.
                     </p>
                     <div class="hero-buttons">
                         <a href="/user/register" class="btn-premium btn-primary-premium">
@@ -661,14 +371,14 @@
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card">
-                            <div class="stat-number">99%</div>
+                            <div class="stat-number">99.9%</div>
                             <div class="stat-label">Uptime Guarantee</div>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="stat-card">
                             <div class="stat-number">24/7</div>
-                            <div class="stat-label">Customer Support</div>
+                            <div class="stat-label">Global Support</div>
                         </div>
                     </div>
                 </div>
@@ -677,14 +387,12 @@
     </div>
 
     <script>
-        // FUNCTION TO SHOW THE MAIN LANDING PAGE (UNCHANGED)
         function showLandingPage() {
             const mainContent = document.getElementById('mainContent');
             mainContent.classList.add('visible');
             document.body.style.overflow = 'auto';
         }
         
-        // NEW VAULT: Create quantum particles
         function initQuantumField() {
             const field = document.getElementById('quantumField');
             const colors = ['#00ffff', '#ff00ff', '#ffff00', '#00ff00', '#ff0080'];
@@ -700,7 +408,6 @@
             }
         }
 
-        // NEW VAULT: Vault opening sequence
         async function initVaultSequence() {
             const vaultScene = document.getElementById('vaultScene');
             const statusDisplay = document.getElementById('statusDisplay');
@@ -744,12 +451,10 @@
             }
         }
 
-        // INITIALIZATION SCRIPT (MODIFIED TO RUN THE NEW SEQUENCE)
         document.addEventListener('DOMContentLoaded', function() {
             initQuantumField();
             initVaultSequence();
 
-            // ORIGINAL LANDING PAGE SCRIPTS
             setTimeout(() => {
                 const observerOptions = { threshold: 0.1, rootMargin: '0px 0px -50px 0px' };
                 const observer = new IntersectionObserver((entries) => {
@@ -767,10 +472,10 @@
                     btn.addEventListener('mousedown', function() { this.style.transform = 'translateY(-1px) scale(0.98)'; });
                     btn.addEventListener('mouseup', function() { this.style.transform = 'translateY(-3px) scale(1.02)'; });
                 });
-            }, 11000); // Delay execution until after vault sequence is complete
+            }, 11000);
 
             document.addEventListener('mousemove', (e) => {
-                if(document.body.style.overflow === 'auto') { // Only run parallax after vault is gone
+                if(document.body.style.overflow === 'auto') {
                     const mouseX = e.clientX / window.innerWidth;
                     const mouseY = e.clientY / window.innerHeight;
                     document.querySelectorAll('.floating-3d').forEach((element, index) => {

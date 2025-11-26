@@ -1,184 +1,300 @@
 <%- include('partials/header', { title: 'Account Details' }) %>
 
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
 <style>
-    /* --- State-of-the-Art Admin Search Results --- */
     :root {
-        --dark-bg: #10101a;
-        --card-bg: rgba(26, 26, 46, 0.7);
-        --card-border: rgba(255, 255, 255, 0.1);
-        --text-light: #f0f0f0;
-        --text-muted: #a0a0b0;
-        --primary-accent: #667eea;
-        --warning-color: #ffa726;
-        --warning-glow: rgba(255, 167, 38, 0.15);
+        --bg-deep: #030014;
+        --glass-bg: rgba(255, 255, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.1);
+        --glass-highlight: rgba(255, 255, 255, 0.2);
+        --primary-glow: #6366f1;
+        --success-glow: #10b981;
+        --warning-glow: #f59e0b;
+        --danger-glow: #ef4444;
+        --text-main: #ffffff;
+        --text-secondary: #cbd5e1; /* Bright Blue-Grey for readability */
     }
 
     body {
-        background-color: var(--dark-bg);
-        color: var(--text-light);
+        background-color: var(--bg-deep);
+        background-image: 
+            radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 25%),
+            radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.1) 0%, transparent 25%);
+        color: var(--text-main);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        min-height: 100vh;
+        overflow-x: hidden;
     }
 
-    .page-header {
-        border-bottom: 1px solid var(--card-border);
-        padding-bottom: 1.5rem;
+    /* --- Typography --- */
+    h1, h2, h3, h4, h5 { font-weight: 700; color: #fff; }
+    
+    .text-gradient {
+        background: linear-gradient(135deg, #fff 0%, #cbd5e1 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
     }
 
-    .page-header h1 {
-        font-weight: 700;
-        font-size: 2rem;
-    }
+    .text-muted { color: var(--text-secondary) !important; opacity: 0.9; }
 
-    /* Glass Card Style */
-    .glass-card {
-        background: var(--card-bg);
+    /* --- Glass Components --- */
+    .ultra-card {
+        background: var(--glass-bg);
         backdrop-filter: blur(20px);
-        border: 1px solid var(--card-border);
-        border-radius: 1rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid var(--glass-border);
+        border-radius: 24px;
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+        height: 100%;
+        position: relative;
     }
-    
+
+    .ultra-card:hover {
+        border-color: var(--glass-highlight);
+        transform: translateY(-5px);
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5);
+    }
+
     .card-header {
-        background: transparent;
-        border-bottom: 1px solid var(--card-border);
-        font-weight: 600;
-        padding: 1rem 1.5rem;
-    }
-
-    /* State-specific cards */
-    .prompt-card, .not-found-card {
-        text-align: center;
-        padding: 4rem 2rem;
-    }
-    .prompt-card i, .not-found-card i {
-        font-size: 4rem;
-        color: var(--primary-accent);
-        opacity: 0.5;
-        margin-bottom: 1.5rem;
-    }
-    .not-found-card i {
-        color: var(--warning-color);
-    }
-    .prompt-card h3, .not-found-card h3 {
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid var(--glass-border);
+        padding: 1.25rem 1.5rem;
         font-weight: 700;
-    }
-    .prompt-card p, .not-found-card p {
-        color: var(--text-muted);
-        max-width: 400px;
-        margin: 0.5rem auto 0;
-    }
-    .not-found-card .searched-number {
-        font-family: 'SF Mono', monospace;
-        background: var(--warning-glow);
-        color: var(--warning-color);
-        padding: 0.25rem 0.5rem;
-        border-radius: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
     }
 
-    /* Details View */
-    .summary-item p {
-        margin-bottom: 0.5rem;
-    }
-    .summary-item strong {
-        color: var(--text-muted);
-        min-width: 150px;
-        display: inline-block;
-    }
-    .members-list .list-group-item {
-        background: transparent;
-        border-color: var(--card-border);
-        color: var(--text-light);
-    }
-    
-    /* Table Styles */
-    .table { color: var(--text-light); }
-    .table thead th {
-        color: var(--text-muted);
-        border-bottom: 1px solid var(--card-border);
-    }
-    .table td, .table th {
-        border-top: 1px solid var(--card-border);
-        vertical-align: middle;
-    }
-    .table-hover tbody tr:hover {
-        background-color: rgba(255, 255, 255, 0.03);
-    }
-    .status-badge {
-        padding: 0.4em 0.8em;
-        border-radius: 20px;
+    /* --- Buttons --- */
+    .btn-glass {
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--glass-border);
+        color: #fff;
+        padding: 0.6rem 1.2rem;
+        border-radius: 12px;
         font-weight: 600;
-        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
     }
+
+    .btn-glass:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border-color: var(--primary-glow);
+        color: white;
+        box-shadow: 0 0 15px rgba(99, 102, 241, 0.3);
+    }
+
+    /* --- Empty States --- */
+    .state-card {
+        text-align: center;
+        padding: 5rem 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .state-icon {
+        font-size: 4rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, rgba(255,255,255,0.2), rgba(255,255,255,0));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 15px rgba(255,255,255,0.1));
+    }
+
+    .state-icon.warn {
+        background: linear-gradient(135deg, #fbbf24, #f59e0b);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        filter: drop-shadow(0 0 15px rgba(245, 158, 11, 0.3));
+    }
+
+    .searched-tag {
+        background: rgba(245, 158, 11, 0.1);
+        color: #fbbf24;
+        padding: 0.2rem 0.6rem;
+        border-radius: 6px;
+        font-family: 'Courier New', monospace;
+        border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    /* --- Account Details --- */
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid var(--glass-border);
+    }
+    .detail-row:last-child { border-bottom: none; }
+    
+    .detail-label { color: var(--text-secondary); font-size: 0.9rem; }
+    .detail-value { font-weight: 700; font-size: 1.1rem; }
+
+    /* --- Member List --- */
+    .member-item {
+        padding: 1rem 1.5rem;
+        border-bottom: 1px solid var(--glass-border);
+        display: flex;
+        align-items: center;
+        transition: 0.2s;
+    }
+    .member-item:hover { background: rgba(255,255,255,0.05); }
+    .member-avatar {
+        width: 40px; height: 40px;
+        background: rgba(99, 102, 241, 0.2);
+        color: #818cf8;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 1rem;
+    }
+
+    /* --- Tables --- */
+    .custom-table { width: 100%; border-collapse: separate; border-spacing: 0 0.5rem; }
+    .custom-table thead th {
+        color: #94a3b8; font-weight: 600; font-size: 0.75rem;
+        text-transform: uppercase; letter-spacing: 0.08em;
+        padding: 0 1.5rem 0.5rem; border: none;
+    }
+    .custom-table tbody tr { background: rgba(255, 255, 255, 0.03); transition: all 0.2s; }
+    .custom-table tbody tr td { padding: 1rem 1.5rem; vertical-align: middle; border: none; color: #fff; }
+    .custom-table tbody tr td:first-child { border-radius: 16px 0 0 16px; }
+    .custom-table tbody tr td:last-child { border-radius: 0 16px 16px 0; }
+    .custom-table tbody tr:hover { background: rgba(255, 255, 255, 0.08); transform: scale(1.005); }
+
+    .badge-status {
+        padding: 0.35em 0.8em;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+    .bg-APPROVED, .bg-success { background: rgba(16, 185, 129, 0.15); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.3); }
+    .bg-PENDING, .bg-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.3); }
+    .bg-REJECTED, .bg-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+
+    /* Animation */
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-in { animation: fadeInUp 0.6s ease-out forwards; opacity: 0; }
 </style>
 
-<div class="container-fluid py-4 px-lg-5">
-    <div class="d-flex justify-content-between align-items-center mb-5 page-header">
-        <h1><i class="fas fa-search-dollar me-3"></i>Account Details</h1>
-        <a href="/admin/dashboard" class="btn btn-outline-secondary">
-            <i class="fas fa-arrow-left me-2"></i>Back to Admin Dashboard
+<div class="container-fluid py-5 px-lg-5">
+    
+    <div class="d-flex justify-content-between align-items-center mb-5 animate-in" style="animation-delay: 0.1s;">
+        <div>
+            <h6 class="text-uppercase text-muted fw-bold mb-2">System Administrator</h6>
+            <h1 class="text-gradient mb-0"><i class="fas fa-search-dollar me-3"></i>Account Details</h1>
+        </div>
+        <a href="/admin/dashboard" class="btn btn-glass">
+            <i class="fas fa-arrow-left me-2"></i>Back to Command Center
         </a>
     </div>
 
     <% if (!searchAttempted) { %>
-        <div class="row justify-content-center">
+        <div class="row justify-content-center animate-in" style="animation-delay: 0.2s;">
             <div class="col-lg-6">
-                <div class="glass-card prompt-card">
-                    <i class="fas fa-search"></i>
-                    <h3>Find an Account</h3>
-                    <p>Use the "Account Lookup" feature on the admin dashboard to search for an account by its number.</p>
+                <div class="ultra-card state-card">
+                    <i class="fas fa-search state-icon"></i>
+                    <h3 class="mb-3">Initiate Search</h3>
+                    <p class="text-muted" style="max-width: 400px;">
+                        Please use the main <strong>"Account Lookup"</strong> feature on the Admin Dashboard to locate a specific account.
+                    </p>
+                    <a href="/admin/dashboard" class="btn btn-glass mt-4">Go to Dashboard</a>
                 </div>
             </div>
         </div>
     <% } else if (!account) { %>
-        <div class="row justify-content-center">
+        <div class="row justify-content-center animate-in" style="animation-delay: 0.2s;">
             <div class="col-lg-6">
-                <div class="glass-card not-found-card">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    <h3>Account Not Found</h3>
-                    <p>No account exists with the number <strong class="searched-number"><%= searchedNumber %></strong>. Please check the number and try again.</p>
+                <div class="ultra-card state-card" style="border-color: rgba(239, 68, 68, 0.3);">
+                    <i class="fas fa-exclamation-triangle state-icon warn"></i>
+                    <h3 class="mb-3 text-white">Account Not Found</h3>
+                    <p class="text-muted">
+                        The system could not locate an account with ID: <span class="searched-tag"><%= searchedNumber %></span>
+                    </p>
+                    <p class="text-muted small mt-2">Please verify the number and try again.</p>
+                    <a href="/admin/dashboard" class="btn btn-glass mt-4">Try Again</a>
                 </div>
             </div>
         </div>
     <% } else { %>
-        <div class="row">
-            <div class="col-lg-5 mb-4">
-                <div class="glass-card mb-4">
-                    <div class="card-header">Account Summary</div>
-                    <div class="card-body summary-item p-4">
-                        <p><strong>Account Number:</strong> <%= account.account_number %></p>
-                        <p><strong>Account Type:</strong> <%= account.account_type %></p>
-                        <p><strong>Balance:</strong> $<%= parseFloat(account.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></p>
+        <div class="row g-4">
+            
+            <div class="col-lg-5 animate-in" style="animation-delay: 0.2s;">
+                <div class="ultra-card mb-4" style="height: auto;">
+                    <div class="card-header"><i class="fas fa-id-card me-2"></i> Account Summary</div>
+                    <div class="p-4">
+                        <div class="detail-row">
+                            <span class="detail-label">Account Number</span>
+                            <span class="detail-value text-white" style="font-family: 'Courier New', monospace;"><%= account.account_number %></span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="detail-label">Account Type</span>
+                            <span class="detail-value text-white"><%= account.account_type %></span>
+                        </div>
+                        <div class="detail-row border-0">
+                            <span class="detail-label">Current Balance</span>
+                            <span class="detail-value text-success" style="font-size: 1.5rem;">$<%= parseFloat(account.balance).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) %></span>
+                        </div>
                     </div>
                 </div>
-                <div class="glass-card members-list">
-                    <div class="card-header">Account Members</div>
-                    <ul class="list-group list-group-flush">
+
+                <div class="ultra-card" style="height: auto;">
+                    <div class="card-header"><i class="fas fa-users me-2"></i> Account Members</div>
+                    <div class="py-2">
                         <% members.forEach(member => { %>
-                            <li class="list-group-item">
-                                <strong><%= member.first_name %> <%= member.last_name %></strong>
-                                <br>
-                                <small class="text-muted"><%= member.email %></small>
-                            </li>
+                            <div class="member-item">
+                                <div class="member-avatar">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold text-white"><%= member.first_name %> <%= member.last_name %></div>
+                                    <div class="text-muted small"><%= member.email %></div>
+                                </div>
+                            </div>
                         <% }); %>
-                    </ul>
+                        <% if (members.length === 0) { %>
+                            <div class="text-center py-4 text-muted">No members linked.</div>
+                        <% } %>
+                    </div>
                 </div>
             </div>
 
-            <div class="col-lg-7">
-                <div class="glass-card mb-4">
-                    <div class="card-header">Loan History</div>
-                    <div class="card-body p-0">
+            <div class="col-lg-7 animate-in" style="animation-delay: 0.3s;">
+                
+                <div class="ultra-card mb-4" style="height: auto;">
+                    <div class="card-header d-flex justify-content-between">
+                        <span><i class="fas fa-file-invoice-dollar me-2"></i> Loan History</span>
+                    </div>
+                    <div class="p-3">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table class="custom-table">
                                 <thead><tr><th>Date</th><th>Type</th><th>Amount</th><th>Status</th></tr></thead>
                                 <tbody>
                                     <% if (loans.length === 0) { %>
-                                        <tr><td colspan="4" class="text-center text-muted py-4">No loan history.</td></tr>
+                                        <tr><td colspan="4" class="text-center text-muted py-4">No loan history records found.</td></tr>
                                     <% } else { loans.forEach(loan => { %>
                                         <tr>
-                                            <td><%= new Date(loan.request_date).toLocaleDateString() %></td>
+                                            <td class="text-muted"><%= new Date(loan.request_date).toLocaleDateString() %></td>
                                             <td><%= loan.loan_type %></td>
-                                            <td>$<%= parseFloat(loan.amount).toFixed(2) %></td>
-                                            <td><span class="status-badge bg-<%= loan.status === 'APPROVED' ? 'success' : (loan.status === 'REJECTED' ? 'danger' : 'warning') %>"><%= loan.status %></span></td>
+                                            <td class="fw-bold">$<%= parseFloat(loan.amount).toFixed(2) %></td>
+                                            <td><span class="badge-status bg-<%= loan.status %>"><%= loan.status %></span></td>
                                         </tr>
                                     <% }); } %>
                                 </tbody>
@@ -187,20 +303,20 @@
                     </div>
                 </div>
 
-                <div class="glass-card">
-                    <div class="card-header">Transaction History</div>
-                     <div class="card-body p-0">
+                <div class="ultra-card" style="height: auto;">
+                    <div class="card-header"><i class="fas fa-history me-2"></i> Transaction History</div>
+                    <div class="p-3">
                         <div class="table-responsive">
-                            <table class="table table-hover mb-0">
+                            <table class="custom-table">
                                 <thead><tr><th>Date</th><th>Type</th><th>Amount</th></tr></thead>
                                 <tbody>
                                     <% if (transactions.length === 0) { %>
-                                        <tr><td colspan="3" class="text-center text-muted py-4">No transaction history.</td></tr>
+                                        <tr><td colspan="3" class="text-center text-muted py-4">No transactions found.</td></tr>
                                     <% } else { transactions.forEach(tx => { %>
                                         <tr>
-                                            <td><%= new Date(tx.timestamp).toLocaleString() %></td>
+                                            <td class="text-muted"><%= new Date(tx.timestamp).toLocaleString() %></td>
                                             <td><%= tx.transaction_type %></td>
-                                            <td class="fw-bold text-<%= tx.from_account_id === account.account_id ? 'danger' : 'success' %>">
+                                            <td class="fw-bold <%= tx.from_account_id === account.account_id ? 'text-danger' : 'text-success' %>">
                                                 <%= tx.from_account_id === account.account_id ? '-' : '+' %> $<%= parseFloat(tx.amount).toFixed(2) %>
                                             </td>
                                         </tr>
@@ -210,6 +326,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
     <% } %>
